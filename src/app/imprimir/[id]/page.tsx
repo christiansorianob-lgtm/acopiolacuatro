@@ -45,10 +45,9 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center py-8">
         
-        {/* Print wrapper to extract content */}
-        <div id="ticket-content" className="bg-white mx-auto text-black relative" style={{ width: '8.5in', height: '5.5in', overflow: 'hidden' }}>
+        {/* Contenedor principal que se extraerá */}
+        <div id="ticket-content" className="bg-white mx-auto text-black relative" style={{ width: '794px', height: '528px', padding: '5px 8px', boxSizing: 'border-box' }}>
           <style dangerouslySetInnerHTML={{__html: `
-            /* Encabezado */
             .ticket-header {
               display: flex;
               align-items: flex-start;
@@ -56,9 +55,9 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               padding: 6px 8px;
             }
             .ticket-header img.logo {
-              width: 65px !important;
-              height: 65px !important;
-              object-fit: contain;
+              width: 70px !important;
+              height: 70px !important;
+              object-fit: contain !important;
               flex-shrink: 0;
             }
             .ticket-header .empresa-info {
@@ -72,13 +71,12 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               line-height: 1.2;
             }
             .ticket-header .numero-tiquete {
-              font-size: 22pt;
+              font-size: 24pt;
               font-weight: 900;
               color: #c0392b;
               line-height: 1;
             }
 
-            /* Grilla principal: 2 columnas */
             .ticket-body {
               display: grid;
               grid-template-columns: 1fr 1fr;
@@ -86,16 +84,15 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               padding: 4px 8px;
             }
 
-            /* Secciones */
             .ticket-seccion {
               border: 1px solid #ccc;
               border-radius: 6px;
               padding: 5px 7px;
-              font-size: 7pt;
+              font-size: 7.5pt;
               line-height: 1.4;
             }
             .ticket-seccion h3 {
-              font-size: 7.5pt;
+              font-size: 8pt;
               font-weight: 700;
               margin: 0 0 4px 0;
               text-transform: uppercase;
@@ -105,9 +102,8 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               gap: 4px;
             }
 
-            /* Pesos destacados */
             .peso-neto {
-              font-size: 14pt;
+              font-size: 16pt;
               font-weight: 900;
             }
             .peso-normal {
@@ -115,13 +111,12 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               font-weight: 700;
             }
 
-            /* Firmas */
             .ticket-firmas {
               display: grid;
               grid-template-columns: 1fr 1fr 1fr;
               gap: 8px;
               padding: 4px 8px;
-              font-size: 7pt;
+              font-size: 7.5pt;
             }
             .firma-bloque {
               border: 1px solid #ccc;
@@ -134,35 +129,48 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               margin-bottom: 3px;
             }
 
-            /* Pie */
             .ticket-pie {
               background: #2e7d32;
               color: white;
               text-align: center;
-              font-size: 7pt;
+              font-size: 7.5pt;
               font-weight: 700;
               padding: 4px;
               margin: 4px 8px 0;
               border-radius: 4px;
             }
 
-            /* QR */
             .qr-bloque {
               display: flex;
-              flex-direction: column;
+              flex-direction: row;
               align-items: center;
               justify-content: center;
+              gap: 8px;
               font-size: 6pt;
-              text-align: center;
               padding: 4px;
             }
-            .qr-bloque img, .qr-bloque svg {
+            .qr-bloque svg {
               width: 70px !important;
               height: 70px !important;
+              flex-shrink: 0;
             }
-            .flex-row { display: flex; justify-content: space-between; }
+            .grid-2 { display: grid; grid-template-columns: 80px 1fr; }
+            .grid-2-veh { display: grid; grid-template-columns: 1fr 1fr; }
             .font-bold { font-weight: bold; }
             .uppercase { text-transform: uppercase; }
+            
+            /* Dotted lines for Observaciones */
+            .lineas-obs {
+              margin-top: 4px;
+              height: 48px;
+              background-image: repeating-linear-gradient(transparent, transparent 15px, #ccc 15px, #ccc 16px);
+              background-color: #f1f5f1;
+              border-radius: 4px;
+              padding: 2px 4px;
+            }
+            .bg-green-light {
+              background-color: #eef5ef;
+            }
           `}} />
 
           {/* Encabezado */}
@@ -175,82 +183,114 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               <div>315 393 0918 | facturacion@agrovaspalma.com</div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '10pt', fontWeight: 'bold' }}>TIQUETE DE PESAJE</div>
+              <div style={{ fontSize: '12pt', fontWeight: 'bold' }}>TIQUETE DE PESAJE</div>
               <div className="numero-tiquete">#{tiquete.numero.toString().padStart(6, '0')}</div>
-              <div style={{ fontSize: '8pt' }}>{formatearFecha(tiquete.fechaEntrada)}</div>
+              <div style={{ fontSize: '8pt' }}>Fecha de emisión:<br/>{formatearFecha(tiquete.fechaEntrada)}</div>
             </div>
           </div>
 
           <div className="ticket-body">
-            {/* Vehículo */}
+            {/* PESAJE */}
             <div className="ticket-seccion">
-              <h3>Vehículo y Conductor</h3>
-              <div className="flex-row">
-                <div><span className="font-bold">Placa:</span> <span className="uppercase">{tiquete.placa}</span></div>
-                <div><span className="font-bold">Vehículo:</span> <span className="uppercase">TRACTOCAMIÓN</span></div>
-              </div>
-              <div><span className="font-bold">Conductor:</span> <span className="uppercase">{tiquete.conductorNombre}</span></div>
-              <div><span className="font-bold">Cédula:</span> <span className="uppercase">{tiquete.conductorNombre?.split(' ').slice(-1)[0] || '---'}</span></div>
-            </div>
-
-            {/* Producto */}
-            <div className="ticket-seccion">
-              <h3>Información del Producto</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                <div><span className="font-bold">Proveedor:</span> <span className="uppercase">{tiquete.proveedorNombre || 'TERCERO'}</span></div>
-                <div><span className="font-bold">Origen:</span> <span className="uppercase">{tiquete.origenNombre || 'ORIGEN'}</span></div>
-                <div><span className="font-bold">Producto:</span> <span className="uppercase">{tiquete.productoNombre || 'PRODUCTO'}</span></div>
-                <div><span className="font-bold">Destino:</span> <span className="uppercase">{tiquete.destinoNombre || 'DESTINO'}</span></div>
-                <div style={{ gridColumn: 'span 2' }}><span className="font-bold">Remisión:</span> <span className="uppercase">{tiquete.remision || 'REMISIÓN'}</span></div>
-              </div>
-            </div>
-
-            {/* Pesos */}
-            <div className="ticket-seccion">
-              <h3>Registro de Pesaje</h3>
-              <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+                PESAJE
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <div>
-                  <div className="font-bold">ENTRADA</div>
-                  <div className="peso-normal">{tiquete.pesoEntrada} kg</div>
-                  <div style={{ fontSize: '6pt' }}>{formatearFecha(tiquete.fechaEntrada)}</div>
+                  <div className="font-bold">Fecha y hora entrada:</div>
+                  <div style={{ borderBottom: '1px dotted #ccc', paddingBottom: '2px', marginBottom: '4px' }}>{formatearFecha(tiquete.fechaEntrada)}</div>
+                  <div className="font-bold">Fecha y hora salida:</div>
+                  <div style={{ borderBottom: '1px dotted #ccc', paddingBottom: '2px' }}>{tiquete.fechaSalida ? formatearFecha(tiquete.fechaSalida) : '---'}</div>
                 </div>
                 <div>
-                  <div className="font-bold">SALIDA</div>
-                  <div className="peso-normal">{tiquete.pesoSalida !== null ? `${tiquete.pesoSalida} kg` : '0 kg'}</div>
-                  <div style={{ fontSize: '6pt' }}>{tiquete.fechaSalida ? formatearFecha(tiquete.fechaSalida) : '---'}</div>
-                </div>
-                <div style={{ background: '#eef5ef', padding: '2px 6px', borderRadius: '4px' }}>
-                  <div className="font-bold" style={{ color: '#2e7d32' }}>NETO</div>
-                  <div className="peso-neto" style={{ color: '#2e7d32' }}>{tiquete.pesoNeto !== null ? `${tiquete.pesoNeto} kg` : '---'}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span>Peso Entrada:</span>
+                    <span className="peso-normal">{tiquete.pesoEntrada} kg</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ccc', paddingBottom: '4px', marginBottom: '4px' }}>
+                    <span>Peso Salida:</span>
+                    <span className="peso-normal">{tiquete.pesoSalida !== null ? `${tiquete.pesoSalida} kg` : '0 kg'}</span>
+                  </div>
+                  <div className="bg-green-light" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 6px', borderRadius: '4px' }}>
+                    <span className="font-bold" style={{ color: '#2e7d32', fontSize: '10pt' }}>PESO NETO:</span>
+                    <span className="peso-neto" style={{ color: '#2e7d32' }}>{tiquete.pesoNeto !== null ? `${tiquete.pesoNeto} kg` : '---'}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Otros */}
+            {/* VEHÍCULO Y CONDUCTOR */}
             <div className="ticket-seccion">
-              <h3>Otros Datos</h3>
-              <div style={{ marginBottom: '2px' }}><span className="font-bold">Precintos:</span> <span className="uppercase">{tiquete.precintos || '---'}</span></div>
-              <div><span className="font-bold">Observaciones:</span> <span className="uppercase">{tiquete.observaciones || '---'}</span></div>
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                VEHÍCULO Y CONDUCTOR
+              </h3>
+              <div className="grid-2-veh" style={{ marginBottom: '4px' }}>
+                <div><div className="font-bold">Placa:</div><div className="uppercase font-bold">{tiquete.placa}</div></div>
+                <div style={{ textAlign: 'right' }}><div className="font-bold">Tipo de vehículo:</div><div className="uppercase">TRACTOCAMIÓN</div></div>
+              </div>
+              <div className="grid-2">
+                <span className="font-bold">Conductor:</span> <span className="uppercase">{tiquete.conductorNombre}</span>
+                <span className="font-bold">Cédula:</span> <span className="uppercase">{tiquete.conductorNombre?.split(' ').slice(-1)[0] || '---'}</span>
+                <span className="font-bold">Transportador:</span> <span className="uppercase">TRANSPORTADOR</span>
+              </div>
+            </div>
+
+            {/* INFORMACIÓN DEL PRODUCTO */}
+            <div className="ticket-seccion">
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+                INFORMACIÓN DEL PRODUCTO
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px' }}>
+                <div className="grid-2">
+                  <span className="font-bold">Proveedor:</span> <span className="uppercase">{tiquete.proveedorNombre || 'TERCERO'}</span>
+                  <span className="font-bold">Producto:</span> <span className="uppercase">{tiquete.productoNombre || 'PRODUCTO'}</span>
+                  <span className="font-bold">Origen:</span> <span className="uppercase">{tiquete.origenNombre || 'ORIGEN'}</span>
+                  <span className="font-bold">Destino:</span> <span className="uppercase">{tiquete.destinoNombre || 'DESTINO'}</span>
+                  <span className="font-bold">Remisión:</span> <span className="uppercase">{tiquete.remision || 'REMISIÓN'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* OTROS DATOS */}
+            <div className="ticket-seccion">
+              <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                OTROS DATOS
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr' }}>
+                <span className="font-bold">Precintos:</span> <span className="uppercase">{tiquete.precintos || '---'}</span>
+              </div>
+              <div className="font-bold" style={{ marginTop: '4px' }}>Observaciones:</div>
+              <div className="lineas-obs uppercase text-[7pt]">{tiquete.observaciones || ''}</div>
             </div>
           </div>
 
           <div className="ticket-firmas">
-            <div className="firma-bloque" style={{ textAlign: 'center' }}>
-              <div className="firma-linea"></div>
-              <div className="font-bold">OPERADOR BÁSCULA</div>
+            <div className="firma-bloque">
+              <div className="font-bold text-center">OPERADOR BÁSCULA</div>
+              <div style={{ marginTop: '8px' }}><span className="font-bold">Nombre:</span> ______________________</div>
+              <div style={{ marginTop: '22px' }}><span className="font-bold">Firma:</span> ______________________</div>
             </div>
-            <div className="firma-bloque" style={{ textAlign: 'center' }}>
-              <div className="firma-linea"></div>
-              <div className="font-bold">CONDUCTOR / TRANSPORTADOR</div>
+            <div className="firma-bloque">
+              <div className="font-bold text-center">RESPONSABLE RECEPCIÓN</div>
+              <div style={{ marginTop: '8px' }}><span className="font-bold">Nombre:</span> ______________________</div>
+              <div style={{ marginTop: '22px' }}><span className="font-bold">Firma:</span> ______________________</div>
             </div>
             <div className="qr-bloque" style={{ border: '1px solid #ccc', borderRadius: '6px' }}>
               <QRCodeSVG value={verificationUrl} size={70} level="H" />
-              <div style={{ marginTop: '2px', fontWeight: 'bold' }}>VERIFICAR QR</div>
+              <div style={{ textAlign: 'center', fontStyle: 'italic', fontSize: '6.5pt' }}>
+                <strong>Gracias por su confianza</strong><br/>
+                Contribuimos al desarrollo del campo y la agroindustria sostenible.<br/><br/>
+                <span style={{ fontSize: '5.5pt', fontStyle: 'normal' }}>Conserve este tiquete para cualquier reclamación o verificación.</span>
+              </div>
             </div>
           </div>
 
           <div className="ticket-pie">
-            DOCUMENTO INFORMATIVO DE PESAJE - NO VÁLIDO COMO FACTURA
+            Este tiquete no tiene validez sin sello y firma.
           </div>
 
         </div>
