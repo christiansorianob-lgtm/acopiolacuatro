@@ -34,7 +34,6 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
 
   const [saving, setSaving] = useState(false);
   const [pesoCapturado, setPesoCapturado] = useState<number>(0);
-  const [simulando, setSimulando] = useState(false);
 
   // Form State
   const [vehiculoId, setVehiculoId] = useState<number | null>(null);
@@ -58,29 +57,6 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
   
   const [qcCedula, setQcCedula] = useState("");
   const [qcNombre, setQcNombre] = useState("");
-
-  // Efecto visual de peso fluctuando
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (simulando) {
-      interval = setInterval(() => {
-        const fakePeso = 15000 + Math.floor(Math.random() * 50);
-        setPesoCapturado(fakePeso);
-      }, 150);
-      setTimeout(() => {
-        clearInterval(interval);
-        setSimulando(false);
-        setPesoCapturado(15230);
-      }, 2000);
-    }
-    return () => clearInterval(interval);
-  }, [simulando]);
-
-  const handleSimularBascula = () => {
-    if (simulando) return;
-    setPesoCapturado(0);
-    setSimulando(true);
-  };
 
   const handleSaveTiquete = async () => {
     if (!vehiculoId || !conductorId) {
@@ -322,30 +298,26 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
           <div className="absolute inset-0 bg-gradient-to-b from-slate-800/20 to-transparent pointer-events-none" />
           
           <div className="p-6 text-center">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Indicador de Peso</h2>
-            
-            <div className={`bg-black rounded-xl p-6 mb-6 border-2 transition-colors duration-300 shadow-inner ${simulando ? 'border-amber-500/50 shadow-amber-500/20' : (pesoCapturado > 0 ? 'border-emerald-500/50 shadow-emerald-500/20' : 'border-slate-800')}`}>
-              <div className="font-mono flex items-baseline justify-center gap-2">
-                <span className={`text-5xl md:text-6xl font-bold tracking-tighter ${simulando ? 'text-amber-500' : (pesoCapturado > 0 ? 'text-emerald-500' : 'text-slate-700')}`}>
-                  {pesoCapturado === 0 ? "00000" : pesoCapturado}
-                </span>
-                <span className={`text-xl font-bold ${pesoCapturado > 0 ? 'text-emerald-500/70' : 'text-slate-700'}`}>
+            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Indicador de Peso</h2>            {/* Display Digital / Input Manual */}
+            <div className={`bg-black rounded-xl p-6 mb-6 border-2 transition-colors duration-300 shadow-inner ${pesoCapturado > 0 ? 'border-emerald-500/50 shadow-emerald-500/20' : 'border-slate-800 focus-within:border-cyan-500/50 focus-within:shadow-cyan-500/20'}`}>
+              <div className="relative flex items-center justify-center">
+                <input
+                  type="number"
+                  min="0"
+                  value={pesoCapturado || ""}
+                  onChange={(e) => setPesoCapturado(parseInt(e.target.value) || 0)}
+                  disabled={saving}
+                  placeholder="00000"
+                  className="w-full bg-transparent text-center text-5xl md:text-6xl font-bold font-mono tracking-tighter text-emerald-500 placeholder-slate-800 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <span className="absolute right-4 text-xl font-bold text-slate-600 font-mono">
                   KG
                 </span>
               </div>
-              <p className={`text-xs mt-2 font-medium ${simulando ? 'text-amber-500 animate-pulse' : (pesoCapturado > 0 ? 'text-emerald-500' : 'text-slate-700')}`}>
-                {simulando ? "LEYENDO PUERTO SERIAL..." : (pesoCapturado > 0 ? "PESO ESTABLE" : "BÁSCULA EN CERO")}
+              <p className="text-xs mt-4 font-medium text-slate-500 uppercase">
+                Ingreso Manual de Peso
               </p>
             </div>
-
-            <button
-              onClick={handleSimularBascula}
-              disabled={simulando || saving}
-              className="w-full py-4 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group border border-slate-700 hover:border-slate-600"
-            >
-              <RefreshCw className={`w-5 h-5 text-cyan-400 group-hover:rotate-180 transition-transform duration-500 ${simulando ? 'animate-spin' : ''}`} />
-              {simulando ? "Capturando..." : "Capturar Peso Báscula"}
-            </button>
           </div>
         </div>
 
