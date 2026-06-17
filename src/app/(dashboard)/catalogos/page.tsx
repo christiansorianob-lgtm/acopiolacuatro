@@ -4,6 +4,10 @@ import { useState } from "react";
 import { Truck, Users, MapPin, Building2, Box, ArrowRightLeft, Target } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { GenericCatalogTab } from "@/components/catalogos/GenericCatalogTab";
+import { VehiculosTab } from "@/components/catalogos/VehiculosTab";
+import { ConductoresTab } from "@/components/catalogos/ConductoresTab";
+import { UsuariosTab } from "@/components/catalogos/UsuariosTab";
+import { UsuariosTab } from "@/components/catalogos/UsuariosTab";
 
 const TABS = [
   { id: "vehiculos", label: "Vehículos", icon: Truck },
@@ -52,8 +56,8 @@ export default function CatalogosPage() {
 
         {/* Tab Content */}
         <div className="p-6 min-h-[400px]">
-          {activeTab === "vehiculos" && <div>Aquí irá el catálogo de Vehículos</div>}
-          {activeTab === "conductores" && <div>Aquí irá el catálogo de Conductores</div>}
+          {activeTab === "vehiculos" && <VehiculosTab />}
+          {activeTab === "conductores" && <ConductoresTab />}
           
           {activeTab === "proveedores" && <GenericCatalogTab type="proveedores" title="Proveedores" />}
           {activeTab === "clientes" && <GenericCatalogTab type="clientes" title="Clientes" />}
@@ -61,7 +65,7 @@ export default function CatalogosPage() {
           {activeTab === "destinos" && <GenericCatalogTab type="destinos" title="Destinos" />}
           {activeTab === "productos" && <GenericCatalogTab type="productos" title="Productos" />}
           
-          {activeTab === "usuarios" && <div>Aquí irá el catálogo de Usuarios</div>}
+          {activeTab === "usuarios" && <UsuariosTab />}
         </div>
       </div>
     </div>
