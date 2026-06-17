@@ -13,6 +13,7 @@ export default withAuth(
     pages: {
       signIn: "/login",
     },
+    secret: process.env.NEXTAUTH_SECRET || "fallback_super_secret_key_acopio_123_override_forced_value_for_vercel",
   }
 );
 
