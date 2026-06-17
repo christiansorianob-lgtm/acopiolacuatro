@@ -36,13 +36,25 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
     };
 
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 print:p-0 print:bg-white text-slate-900">
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 print:p-0 print:m-0 print:bg-white print:block print:min-h-0 text-slate-900">
         
+        <style dangerouslySetInnerHTML={{__html: `
+          @media print {
+            @page {
+              size: 5.5in 8.5in; /* Media carta */
+              margin: 10mm;
+            }
+            body {
+              -webkit-print-color-adjust: exact;
+            }
+          }
+        `}} />
+
         {/* ClientPrint handles window.print() on mount */}
         <ClientPrint />
 
         {/* Adjust width and padding for half-letter print: 5.5 x 8.5 in */}
-        <div className="bg-white p-6 max-w-xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full print:text-sm">
+        <div className="bg-white p-6 max-w-xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full print:text-sm print:m-0 mx-auto break-inside-avoid">
           
           {/* Header Agrovaspalma */}
           <div className="text-center pb-4 mb-4 border-b-2 border-slate-900">
