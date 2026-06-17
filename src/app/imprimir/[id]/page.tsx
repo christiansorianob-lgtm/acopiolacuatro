@@ -41,6 +41,10 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const verificationUrl = `${protocol}://${host}/verificar?t=${tiquete.numero}&firma=${firma}`;
+    
+    // Generate QR Data URL
+    const QRCode = require('qrcode');
+    const qrUrl = await QRCode.toDataURL(verificationUrl, { errorCorrectionLevel: 'H', margin: 1 });
 
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center py-8">
@@ -294,8 +298,28 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
 
         </div>
 
-        <div className="fixed bottom-8 right-8 print:hidden">
-          <PrintButton />
+        <div className="fixed bottom-8 right-8">
+          <PrintButton 
+            tiquete={{
+              numero: tiquete.numero,
+              fechaEntrada: formatearFecha(tiquete.fechaEntrada),
+              fechaSalida: tiquete.fechaSalida ? formatearFecha(tiquete.fechaSalida) : null,
+              pesoEntrada: tiquete.pesoEntrada,
+              pesoSalida: tiquete.pesoSalida,
+              pesoNeto: tiquete.pesoNeto,
+              placa: tiquete.placa,
+              conductorNombre: tiquete.conductorNombre,
+              conductorCedula: tiquete.conductorNombre?.split(' ').slice(-1)[0] || '---',
+              proveedorNombre: tiquete.proveedorNombre || 'TERCERO',
+              productoNombre: tiquete.productoNombre || 'PRODUCTO',
+              origenNombre: tiquete.origenNombre,
+              destinoNombre: tiquete.destinoNombre,
+              remision: tiquete.remision,
+              precintos: tiquete.precintos,
+              observaciones: tiquete.observaciones,
+              qrUrl: qrUrl
+            }}
+          />
         </div>
       </div>
     );
