@@ -42,7 +42,7 @@ export function SearchableSelect({ options, value, onChange, placeholder = "Sele
   );
 
   return (
-    <div className="relative w-full" ref={wrapperRef}>
+    <div className={`relative w-full ${isOpen ? 'z-50' : 'z-10'}`} ref={wrapperRef}>
       <button
         type="button"
         disabled={disabled}
