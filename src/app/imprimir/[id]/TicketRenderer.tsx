@@ -4,25 +4,26 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { PrintButton } from './PrintButton';
 
+let hasTriggeredPrint = false;
+
 export function TicketRenderer({ tiquete }: { tiquete: any }) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get('print') !== '1') return;
+    if (hasTriggeredPrint) return;
     
-    let ejecutado = false;
     const timer = setTimeout(() => {
-      if (!ejecutado) {
-        ejecutado = true;
+      if (!hasTriggeredPrint) {
+        hasTriggeredPrint = true;
         window.print();
       }
     }, 1500);
 
     return () => {
       clearTimeout(timer);
-      ejecutado = true;
     };
-  }, [searchParams]);
+  }, [searchParams.get('print')]);
 
   const generarHTMLTiquete = (tiquete: any) => {
     const iconoBalanza = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>`;
@@ -163,18 +164,10 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
     <div className="min-h-screen bg-slate-100 print:bg-white flex flex-col items-center justify-center py-8 print:py-0 print:block">
       
       <style dangerouslySetInnerHTML={{__html: `
-        .instruccion-impresion {
-          display: block;
-        }
-
         @media print {
-          .instruccion-impresion {
-            display: none;
-          }
-
           @page {
             size: 8.5in 5.5in;
-            margin: 2mm 3mm;
+            margin: 0;
           }
 
           html, body {
@@ -185,12 +178,14 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
           }
 
           #tiquete-wrapper {
-            width: 100% !important;
-            height: calc(5.5in - 4mm) !important;
-            min-height: calc(5.5in - 4mm) !important;
+            width: 8.5in !important;
+            height: 5.5in !important;
+            min-height: 5.5in !important;
             display: flex !important;
             flex-direction: column !important;
             overflow: hidden !important;
+            padding: 2mm 3mm !important;
+            box-sizing: border-box !important;
           }
 
           #tiquete-wrapper .fila-pesaje-vehiculo {
@@ -226,22 +221,6 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
           }
         }
       `}} />
-
-      <div className="instruccion-impresion" style={{
-        background:'#fff3cd',
-        border:'1px solid #ffc107',
-        padding:'10px 16px',
-        marginBottom:'16px',
-        borderRadius:'6px',
-        fontSize:'13px',
-        color:'#856404',
-        fontFamily:'Arial,sans-serif'
-      }}>
-        ⚠️ <strong>Antes de imprimir:</strong> En el diálogo de Chrome ve a 
-        <strong>Más ajustes</strong> y desactiva 
-        <strong>"Encabezados y pies de página"</strong>. 
-        Solo necesitas hacerlo una vez, Chrome lo recuerda.
-      </div>
 
       <div id="tiquete-wrapper-container" className="w-full h-full flex items-center justify-center print:block print:w-full print:h-full">
         <div id="tiquete-wrapper" dangerouslySetInnerHTML={{ __html: generarHTMLTiquete(tiquete) }} />
