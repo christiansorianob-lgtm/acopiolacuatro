@@ -300,7 +300,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
           <div className="p-6 text-center">
             <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Indicador de Peso</h2>            {/* Display Digital / Input Manual */}
             <div className={`bg-black rounded-xl p-6 mb-6 border-2 transition-colors duration-300 shadow-inner ${pesoCapturado > 0 ? 'border-emerald-500/50 shadow-emerald-500/20' : 'border-slate-800 focus-within:border-cyan-500/50 focus-within:shadow-cyan-500/20'}`}>
-              <div className="relative flex items-center justify-center">
+              <div className="flex items-baseline justify-center gap-2">
                 <input
                   type="number"
                   min="0"
@@ -308,9 +308,9 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
                   onChange={(e) => setPesoCapturado(parseInt(e.target.value) || 0)}
                   disabled={saving}
                   placeholder="00000"
-                  className="w-full bg-transparent text-center text-5xl md:text-6xl font-bold font-mono tracking-tighter text-emerald-500 placeholder-slate-800 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-[200px] bg-transparent text-right text-5xl md:text-6xl font-bold font-mono tracking-tighter text-emerald-500 placeholder-slate-800 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <span className="absolute right-4 text-xl font-bold text-slate-600 font-mono">
+                <span className="text-xl font-bold text-slate-600 font-mono">
                   KG
                 </span>
               </div>
