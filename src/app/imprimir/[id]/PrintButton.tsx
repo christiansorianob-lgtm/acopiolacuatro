@@ -2,61 +2,66 @@
 
 export function PrintButton() {
   const imprimir = () => {
-    const contenido = document.getElementById('ticket-content')?.innerHTML;
+    const contenido = document.getElementById('ticket-content');
     if (!contenido) return;
 
-    const ventana = window.open('', '_blank', 'width=816,height=528');
-    if (!ventana) {
-      alert("Por favor habilita las ventanas emergentes (pop-ups) para imprimir el tiquete.");
-      return;
-    }
+    const ventana = window.open('', '_blank', 'width=794,height=528');
+    if (!ventana) return;
 
-    ventana.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title></title>
-          <style>
-            @page {
-              size: 8.5in 5.5in;
-              margin: 4mm 6mm;
-            }
-            * {
-              box-sizing: border-box;
-              page-break-inside: avoid;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-            body {
-              margin: 0;
-              padding: 0;
-              font-family: Arial, sans-serif;
-              font-size: 7.5px;
-              width: 8.5in;
-              max-height: 5.5in;
-              overflow: hidden;
-            }
-            #ticket-content {
-              width: 100%;
-              max-height: 5.5in;
-            }
-            /* Reducir todos los paddings internos */
-            .seccion { padding: 4px 6px; }
-            .header-empresa { padding: 4px 6px; }
-            .bloque-pesos { padding: 4px; }
-            .firmas { padding-top: 28px; }
-          </style>
-        </head>
-        <body>
-          <div id="ticket-content">${contenido}</div>
-        </body>
-      </html>
-    `);
+    ventana.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title></title>
+  <meta charset="UTF-8"/>
+  <style>
+    @page {
+      size: 8.5in 5.5in;
+      margin: 5mm 7mm;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 8.5in;
+      height: 5.5in;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      font-size: 7.5pt;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    #wrapper {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    img {
+      max-width: 100%;
+    }
+    img.logo {
+      width: 65px !important;
+      height: 65px !important;
+      object-fit: contain !important;
+    }
+    * {
+      box-sizing: border-box;
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    ${contenido.innerHTML}
+  </div>
+</body>
+</html>`);
+
     ventana.document.close();
     ventana.onload = () => {
-      ventana.focus();
-      ventana.print();
-      ventana.close();
+      setTimeout(() => {
+        ventana.focus();
+        ventana.print();
+        ventana.close();
+      }, 500);
     };
   };
 
