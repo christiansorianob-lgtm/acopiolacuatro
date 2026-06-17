@@ -15,23 +15,28 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // Buscamos todos los usuarios activos porque el login es SOLO con el PIN
-        const usuarios = await prisma.usuarios.findMany({
-          where: { activo: true }
-        });
+        try {
+          // Buscamos todos los usuarios activos
+          const usuarios = await prisma.usuarios.findMany({
+            where: { activo: true }
+          });
 
-        for (const user of usuarios) {
-          const isValid = await bcrypt.compare(credentials.pin, user.pin);
-          if (isValid) {
-            return {
-              id: user.id.toString(),
-              name: user.nombre,
-              rol: user.rol,
-            };
+          for (const user of usuarios) {
+            const isValid = await bcrypt.compare(credentials.pin, user.pin);
+            if (isValid) {
+              return {
+                id: user.id.toString(),
+                name: user.nombre,
+                rol: user.rol,
+              };
+            }
           }
-        }
 
-        return null; // PIN incorrecto o no encontrado
+          return null; // PIN incorrecto
+        } catch (error) {
+          console.error("Database connection error in authorize:", error);
+          throw new Error("Error de conexión a la base de datos");
+        }
       }
     })
   ],

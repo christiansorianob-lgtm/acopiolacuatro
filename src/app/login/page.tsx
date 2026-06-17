@@ -37,7 +37,11 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("PIN incorrecto");
+      if (result.error === "CredentialsSignin") {
+        setError("PIN incorrecto");
+      } else {
+        setError(result.error);
+      }
       setPin("");
       setLoading(false);
     } else {
