@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ClientPrint } from "./ClientPrint";
 import { PrintButton } from "./PrintButton";
 import { Scale } from "lucide-react";
 
@@ -36,28 +35,10 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
     };
 
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 print:p-0 print:m-0 print:bg-white print:block print:min-h-0 text-slate-900">
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
         
-        <style dangerouslySetInnerHTML={{__html: `
-          @media print {
-            @page {
-              size: 8.5in 5.5in landscape; /* Media carta horizontal */
-              margin: 8mm 10mm;
-            }
-            body {
-              width: 8.5in;
-              height: 5.5in;
-              min-height: unset;
-              -webkit-print-color-adjust: exact;
-            }
-          }
-        `}} />
-
-        {/* ClientPrint handles window.print() on mount */}
-        <ClientPrint />
-
-        {/* Adjust width and padding for landscape half-letter print: 8.5 x 5.5 in */}
-        <div className="bg-white p-4 max-w-3xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full print:w-full print:text-sm print:m-0 mx-auto break-inside-avoid">
+        {/* Print wrapper to extract content */}
+        <div id="ticket-content" className="bg-white p-6 max-w-3xl w-full rounded-xl shadow-xl border border-slate-200 mx-auto">
           
           {/* Header Agrovaspalma */}
           <div className="text-center pb-2 mb-2 border-b-2 border-slate-900">
@@ -161,24 +142,26 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           )}
 
           {/* Firmas */}
-          <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="mt-[40px] grid grid-cols-2 gap-4">
             <div className="text-center">
-              <div className="border-t border-slate-300 w-4/5 mx-auto pt-1">
+              <div className="border-t border-slate-900 w-4/5 mx-auto pt-2">
                 <p className="text-[9px] font-bold uppercase text-slate-500">Báscula</p>
                 <p className="text-[9px] text-slate-400 uppercase">{tiquete.usuarioSalida?.nombre || tiquete.usuarioEntrada?.nombre || "N/A"}</p>
               </div>
             </div>
             <div className="text-center">
-              <div className="border-t border-slate-300 w-4/5 mx-auto pt-1">
+              <div className="border-t border-slate-900 w-4/5 mx-auto pt-2">
                 <p className="text-[9px] font-bold uppercase text-slate-500">Conductor</p>
                 <p className="text-[9px] text-slate-400 uppercase">C.C. {(tiquete.conductorNombre || "").split(" ").slice(-1)}</p>
               </div>
             </div>
           </div>
           
-          {/* Actions (Not Printed) */}
-          <PrintButton />
+        </div>
 
+        {/* Actions (Not Printed, Outside Ticket) */}
+        <div className="absolute top-4 right-4 sm:static sm:mt-8 sm:text-center">
+          <PrintButton />
         </div>
       </div>
     );
