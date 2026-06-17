@@ -11,7 +11,7 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
     if (searchParams.get('print') === '1') {
       setTimeout(() => {
         window.print();
-      }, 800);
+      }, 2000);
     }
   }, [searchParams]);
 
@@ -163,31 +163,13 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
           html, body {
             margin: 0 !important;
             padding: 0 !important;
-            width: 8.5in !important;
-            height: 5.5in !important;
-            overflow: hidden !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
 
-          body > *:not(#tiquete-wrapper-container) {
-            display: none !important;
-          }
-
           #tiquete-wrapper {
-            display: flex !important;
-            flex-direction: column !important;
             width: 100% !important;
-            height: 100% !important;
             overflow: hidden !important;
-            page-break-after: avoid !important;
-            page-break-before: avoid !important;
-            page-break-inside: avoid !important;
-          }
-
-          * {
-            page-break-after: avoid !important;
-            page-break-before: avoid !important;
           }
         }
 
