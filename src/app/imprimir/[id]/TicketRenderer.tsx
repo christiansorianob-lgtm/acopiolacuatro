@@ -8,11 +8,20 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (searchParams.get('print') === '1') {
-      setTimeout(() => {
+    if (searchParams.get('print') !== '1') return;
+    
+    let ejecutado = false;
+    const timer = setTimeout(() => {
+      if (!ejecutado) {
+        ejecutado = true;
         window.print();
-      }, 2000);
-    }
+      }
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+      ejecutado = true;
+    };
   }, [searchParams]);
 
   const generarHTMLTiquete = (tiquete: any) => {
@@ -72,9 +81,9 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
                 <div style="font-size:10pt;font-weight:700;">${tiquete.pesoSalida !== null ? tiquete.pesoSalida.toLocaleString('es-CO') : '0'} kg</div>
               </div>
             </div>
-            <div style="background:#e8f5e9;border-radius:4px;padding:4px 6px;margin-top:auto;display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-weight:700;font-size:8pt;color:#2e7d32;">PESO NETO:</span>
-              <span style="font-size:14pt;font-weight:900;color:#1a1a1a;">${tiquete.pesoNeto !== null ? tiquete.pesoNeto.toLocaleString('es-CO') : '---'} kg</span>
+            <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:6px;padding:6px 10px;margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:700;font-size:9pt;color:#2e7d32;text-transform:uppercase;letter-spacing:0.5px;">PESO NETO:</span>
+              <span style="font-size:18pt;font-weight:900;color:#1a1a1a;font-family:Arial,sans-serif;letter-spacing:-0.5px;">${tiquete.pesoNeto !== null ? tiquete.pesoNeto.toLocaleString('es-CO') : '---'} kg</span>
             </div>
           </div>
 
@@ -165,7 +174,7 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
 
           @page {
             size: 8.5in 5.5in;
-            margin: 3mm 4mm;
+            margin: 2mm 3mm;
           }
 
           html, body {
@@ -177,8 +186,8 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
 
           #tiquete-wrapper {
             width: 100% !important;
-            height: calc(5.5in - 6mm) !important;
-            min-height: calc(5.5in - 6mm) !important;
+            height: calc(5.5in - 4mm) !important;
+            min-height: calc(5.5in - 4mm) !important;
             display: flex !important;
             flex-direction: column !important;
             overflow: hidden !important;
