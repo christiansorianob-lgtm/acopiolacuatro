@@ -41,10 +41,13 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
         <style dangerouslySetInnerHTML={{__html: `
           @media print {
             @page {
-              size: 5.5in 8.5in; /* Media carta */
-              margin: 10mm;
+              size: 8.5in 5.5in landscape; /* Media carta horizontal */
+              margin: 8mm 10mm;
             }
             body {
+              width: 8.5in;
+              height: 5.5in;
+              min-height: unset;
               -webkit-print-color-adjust: exact;
             }
           }
@@ -53,11 +56,11 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
         {/* ClientPrint handles window.print() on mount */}
         <ClientPrint />
 
-        {/* Adjust width and padding for half-letter print: 5.5 x 8.5 in */}
-        <div className="bg-white p-6 max-w-xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full print:text-sm print:m-0 mx-auto break-inside-avoid">
+        {/* Adjust width and padding for landscape half-letter print: 8.5 x 5.5 in */}
+        <div className="bg-white p-4 max-w-3xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full print:w-full print:text-sm print:m-0 mx-auto break-inside-avoid">
           
           {/* Header Agrovaspalma */}
-          <div className="text-center pb-4 mb-4 border-b-2 border-slate-900">
+          <div className="text-center pb-2 mb-2 border-b-2 border-slate-900">
             <h1 className="text-xl font-black uppercase text-slate-900 tracking-wider">SOCIEDAD AGROVASPALMA S.A.S.</h1>
             <p className="text-xs font-bold text-slate-700">NIT: 901.666.764-5</p>
             <p className="text-[10px] text-slate-600 font-medium">KDX 9-1 B Vrd Llano Grande - Norte de Santander</p>
@@ -66,7 +69,7 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           </div>
 
           {/* Tiquete Info */}
-          <div className="flex justify-between items-end mb-4">
+          <div className="flex justify-between items-end mb-2">
             <div>
               <h2 className="text-base font-black uppercase tracking-widest text-slate-900">Centro Acopio</h2>
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Tiquete de Báscula</p>
@@ -79,7 +82,7 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           </div>
 
           {/* Data Grid */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-2">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Vehículo</p>
               <p className="font-black text-sm text-slate-900">{tiquete.placa || '---'}</p>
@@ -117,7 +120,7 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           </div>
 
           {/* Pesos */}
-          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-4 print:bg-white print:border-slate-300">
+          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-2 print:bg-white print:border-slate-300">
             <div className="grid grid-cols-3 gap-2 text-center">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Entrada</p>
@@ -138,7 +141,7 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
 
           {/* Info Extra */}
           {(tiquete.remision || tiquete.observaciones) && (
-            <div className="mb-4 border-t border-slate-200 pt-3">
+            <div className="mb-2 border-t border-slate-200 pt-3">
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Adicional</h3>
               <div className="grid grid-cols-2 gap-2">
                 {tiquete.remision && (
@@ -158,7 +161,7 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           )}
 
           {/* Firmas */}
-          <div className="mt-8 grid grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="text-center">
               <div className="border-t border-slate-300 w-4/5 mx-auto pt-1">
                 <p className="text-[9px] font-bold uppercase text-slate-500">Báscula</p>
