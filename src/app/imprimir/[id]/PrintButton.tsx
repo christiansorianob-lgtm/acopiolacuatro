@@ -11,10 +11,20 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
     const iconoDoc = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>`;
 
     return `
-      <div style="width:100%;height:100%;font-family:Arial,sans-serif;font-size:7.5pt;color:#1a1a1a;display:flex;flex-direction:column;gap:4px;">
+      <div style="
+        width:100%;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        gap:3px;
+        font-family:Arial,sans-serif;
+        font-size:7pt;
+        color:#1a1a1a;
+        overflow:hidden;
+      ">
         
         <!-- ENCABEZADO -->
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;border-bottom:2px solid #2e7d32;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:4px;border-bottom:2px solid #2e7d32;flex-shrink:0;">
           <div style="display:flex;align-items:center;gap:8px;">
             <img src="/logo.png" style="width:60px;height:60px;object-fit:contain;" />
             <div>
@@ -33,9 +43,9 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
         </div>
 
         <!-- FILA 1: PESAJE + VEHÍCULO -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
           
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;">
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoBalanza} PESAJE</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:7pt;">
               <div>
@@ -51,13 +61,13 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
                 <div style="font-size:10pt;font-weight:700;">${tiquete.pesoSalida !== null ? tiquete.pesoSalida.toLocaleString('es-CO') : '0'} kg</div>
               </div>
             </div>
-            <div style="background:#e8f5e9;border-radius:4px;padding:4px 6px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="background:#e8f5e9;border-radius:4px;padding:4px 6px;margin-top:auto;display:flex;justify-content:space-between;align-items:center;">
               <span style="font-weight:700;font-size:8pt;color:#2e7d32;">PESO NETO:</span>
               <span style="font-size:14pt;font-weight:900;color:#1a1a1a;">${tiquete.pesoNeto !== null ? tiquete.pesoNeto.toLocaleString('es-CO') : '---'} kg</span>
             </div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;">
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoCamion} VEHÍCULO Y CONDUCTOR</div>
             <div style="font-size:7pt;display:grid;grid-template-columns:auto 1fr;gap:2px 8px;">
               <span style="color:#666;">Placa:</span><span style="font-weight:700;font-size:9pt;text-transform:uppercase;">${tiquete.placa}</span>
@@ -70,9 +80,9 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
         </div>
 
         <!-- FILA 2: PRODUCTO + OTROS DATOS -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
           
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;">
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoPlanta} INFORMACIÓN DEL PRODUCTO</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;font-size:7pt;">
               <div><span style="color:#666;">Proveedor: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.proveedorNombre}</span></div>
@@ -83,43 +93,45 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
             </div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;">
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoDoc} OTROS DATOS</div>
             <div style="font-size:7pt;">
               <div><span style="color:#666;">Precintos: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.precintos || '---'}</span></div>
               <div style="color:#666;margin-top:3px;">Observaciones:</div>
-              <div style="border:1px solid #ddd;border-radius:4px;height:38px;padding:2px 4px;margin-top:2px;font-size:6.5pt;text-transform:uppercase;">${tiquete.observaciones || ''}</div>
+              <div style="border:1px solid #ddd;border-radius:4px;flex-grow:1;padding:2px 4px;margin-top:2px;font-size:6.5pt;text-transform:uppercase;min-height:28px;">${tiquete.observaciones || ''}</div>
             </div>
           </div>
         </div>
 
         <!-- FILA 3: FIRMAS + QR -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;flex:1.5;min-height:0;">
           
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;font-size:7pt;">
-            <div style="font-weight:700;text-align:center;margin-bottom:8px;">OPERADOR BÁSCULA</div>
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
+            <div style="font-weight:700;text-align:center;margin-bottom:auto;">OPERADOR BÁSCULA</div>
             <div>Nombre: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
-            <div style="margin-top:18px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
+            <div style="margin-top:8px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;font-size:7pt;">
-            <div style="font-weight:700;text-align:center;margin-bottom:8px;">RESPONSABLE RECEPCIÓN</div>
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
+            <div style="font-weight:700;text-align:center;margin-bottom:auto;">RESPONSABLE RECEPCIÓN</div>
             <div>Nombre: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
-            <div style="margin-top:18px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
+            <div style="margin-top:8px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:5px 7px;display:flex;gap:6px;align-items:center;">
-            <img src="${tiquete.qrUrl}" style="width:65px;height:65px;flex-shrink:0;" />
-            <div style="font-size:6pt;color:#444;line-height:1.4;">
-              <div style="font-weight:700;font-size:6.5pt;">Gracias por su confianza</div>
-              <div style="font-style:italic;">Contribuimos al desarrollo del campo y la agroindustria sostenible.</div>
-              <div style="margin-top:4px;">Conserve este tiquete para cualquier reclamación o verificación.</div>
+          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;justify-content:center;">
+            <div style="display:flex;gap:6px;align-items:center;">
+              <img src="${tiquete.qrUrl}" style="width:55px;height:55px;flex-shrink:0;" />
+              <div style="font-size:5.5pt;color:#444;line-height:1.2;">
+                <div style="font-weight:700;font-size:6pt;">Gracias por su confianza</div>
+                <div style="font-style:italic;">Contribuimos al desarrollo del campo y la agroindustria sostenible.</div>
+                <div style="margin-top:2px;">Conserve este tiquete para cualquier reclamación.</div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- PIE -->
-        <div style="background:#2e7d32;color:white;text-align:center;font-size:7pt;font-weight:700;padding:5px;border-radius:4px;">
+        <div style="background:#2e7d32;color:white;text-align:center;font-size:7pt;font-weight:700;padding:4px;border-radius:4px;flex-shrink:0;">
           Este tiquete no tiene validez sin sello y firma.
         </div>
 
@@ -139,24 +151,34 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
   <style>
     @page {
       size: 8.5in 5.5in;
-      margin: 6mm 8mm;
+      margin: 4mm 5mm;
     }
-    html, body {
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+    html, body {
       width: 8.5in;
       height: 5.5in;
+      max-height: 5.5in;
       overflow: hidden;
       background: white;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
     #tiquete-root {
-      width: calc(8.5in - 16mm);
-      height: calc(5.5in - 12mm);
+      width: 203mm;
+      height: 132mm;
+      max-height: 132mm;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      gap: 3px;
+    }
+    #tiquete-root > *:last-child {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
     }
   </style>
 </head>
