@@ -2,10 +2,10 @@
 
 export function PrintButton() {
   const imprimir = () => {
-    const contenido = document.getElementById('ticket-content');
+    const contenido = document.getElementById('ticket-content')?.innerHTML;
     if (!contenido) return;
 
-    const ventana = window.open('', '_blank', 'width=794,height=528');
+    const ventana = window.open('', '_blank', 'width=816,height=528');
     if (!ventana) return;
 
     ventana.document.write(`<!DOCTYPE html>
@@ -16,41 +16,47 @@ export function PrintButton() {
   <style>
     @page {
       size: 8.5in 5.5in;
-      margin: 5mm 7mm;
+      margin: 15mm;
     }
     html, body {
       margin: 0;
       padding: 0;
-      width: 8.5in;
-      height: 5.5in;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      font-size: 7.5pt;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    #wrapper {
       width: 100%;
       height: 100%;
       overflow: hidden;
+      background: white;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
-    img {
-      max-width: 100%;
+    #scale-wrapper {
+      width: 702px;
+      height: 414px;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      font-size: 7.5pt;
+      box-sizing: border-box;
+      transform-origin: top left;
+      transform: scale(0.90);
     }
     img.logo {
       width: 65px !important;
       height: 65px !important;
       object-fit: contain !important;
     }
+    img {
+      max-width: 100%;
+    }
     * {
       box-sizing: border-box;
       page-break-inside: avoid;
+      page-break-after: avoid;
+      page-break-before: avoid;
     }
   </style>
 </head>
 <body>
-  <div id="wrapper">
-    ${contenido.innerHTML}
+  <div id="scale-wrapper">
+    ${contenido}
   </div>
 </body>
 </html>`);
@@ -61,7 +67,7 @@ export function PrintButton() {
         ventana.focus();
         ventana.print();
         ventana.close();
-      }, 500);
+      }, 600);
     };
   };
 

@@ -45,33 +45,32 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center py-8">
         
-        {/* Contenedor principal que se extraerá */}
-        <div id="ticket-content" className="bg-white mx-auto text-black relative" style={{ width: '794px', height: '528px', padding: '5px 8px', boxSizing: 'border-box' }}>
+        <div id="ticket-content" className="bg-white mx-auto text-black relative" style={{ width: '702px', height: '414px', padding: '4px', boxSizing: 'border-box' }}>
           <style dangerouslySetInnerHTML={{__html: `
             .ticket-header {
               display: flex;
               align-items: flex-start;
-              gap: 12px;
-              padding: 6px 8px;
+              gap: 8px;
+              padding: 2px 4px;
             }
             .ticket-header img.logo {
-              width: 70px !important;
-              height: 70px !important;
+              width: 50px !important;
+              height: 50px !important;
               object-fit: contain !important;
               flex-shrink: 0;
             }
             .ticket-header .empresa-info {
               flex: 1;
-              font-size: 7.5pt;
-              line-height: 1.3;
+              font-size: 6.5pt;
+              line-height: 1.1;
             }
             .ticket-header .empresa-nombre {
-              font-size: 12pt;
+              font-size: 10pt;
               font-weight: 900;
-              line-height: 1.2;
+              line-height: 1.1;
             }
             .ticket-header .numero-tiquete {
-              font-size: 24pt;
+              font-size: 18pt;
               font-weight: 900;
               color: #c0392b;
               line-height: 1;
@@ -80,21 +79,21 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
             .ticket-body {
               display: grid;
               grid-template-columns: 1fr 1fr;
-              gap: 4px;
-              padding: 4px 8px;
+              gap: 2px;
+              padding: 2px 4px;
             }
 
             .ticket-seccion {
               border: 1px solid #ccc;
-              border-radius: 6px;
-              padding: 5px 7px;
-              font-size: 7.5pt;
-              line-height: 1.4;
+              border-radius: 4px;
+              padding: 3px 5px;
+              font-size: 6.5pt;
+              line-height: 1.2;
             }
             .ticket-seccion h3 {
-              font-size: 8pt;
+              font-size: 7pt;
               font-weight: 700;
-              margin: 0 0 4px 0;
+              margin: 0 0 2px 0;
               text-transform: uppercase;
               color: #2e7d32;
               display: flex;
@@ -103,41 +102,41 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
             }
 
             .peso-neto {
-              font-size: 16pt;
+              font-size: 12pt;
               font-weight: 900;
             }
             .peso-normal {
-              font-size: 10pt;
+              font-size: 8pt;
               font-weight: 700;
             }
 
             .ticket-firmas {
               display: grid;
               grid-template-columns: 1fr 1fr 1fr;
-              gap: 8px;
-              padding: 4px 8px;
-              font-size: 7.5pt;
+              gap: 4px;
+              padding: 2px 4px;
+              font-size: 6.5pt;
             }
             .firma-bloque {
               border: 1px solid #ccc;
-              border-radius: 6px;
-              padding: 5px 7px;
+              border-radius: 4px;
+              padding: 3px 5px;
             }
             .firma-linea {
-              margin-top: 24px;
+              margin-top: 16px;
               border-bottom: 1px solid #333;
-              margin-bottom: 3px;
+              margin-bottom: 2px;
             }
 
             .ticket-pie {
               background: #2e7d32;
               color: white;
               text-align: center;
-              font-size: 7.5pt;
+              font-size: 6.5pt;
               font-weight: 700;
-              padding: 4px;
-              margin: 4px 8px 0;
-              border-radius: 4px;
+              padding: 2px;
+              margin: 2px 4px 0;
+              border-radius: 2px;
             }
 
             .qr-bloque {
@@ -145,24 +144,24 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
               flex-direction: row;
               align-items: center;
               justify-content: center;
-              gap: 8px;
-              font-size: 6pt;
-              padding: 4px;
+              gap: 4px;
+              font-size: 5.5pt;
+              padding: 2px;
             }
             .qr-bloque svg {
-              width: 70px !important;
-              height: 70px !important;
+              width: 50px !important;
+              height: 50px !important;
               flex-shrink: 0;
             }
-            .grid-2 { display: grid; grid-template-columns: 80px 1fr; }
+            .grid-2 { display: grid; grid-template-columns: 70px 1fr; }
             .grid-2-veh { display: grid; grid-template-columns: 1fr 1fr; }
             .font-bold { font-weight: bold; }
             .uppercase { text-transform: uppercase; }
             
             /* Dotted lines for Observaciones */
             .lineas-obs {
-              margin-top: 4px;
-              height: 48px;
+              margin-top: 2px;
+              height: 32px;
               background-image: repeating-linear-gradient(transparent, transparent 15px, #ccc 15px, #ccc 16px);
               background-color: #f1f5f1;
               border-radius: 4px;
