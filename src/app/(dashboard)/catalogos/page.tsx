@@ -7,7 +7,6 @@ import { GenericCatalogTab } from "@/components/catalogos/GenericCatalogTab";
 import { VehiculosTab } from "@/components/catalogos/VehiculosTab";
 import { ConductoresTab } from "@/components/catalogos/ConductoresTab";
 import { UsuariosTab } from "@/components/catalogos/UsuariosTab";
-import { UsuariosTab } from "@/components/catalogos/UsuariosTab";
 
 const TABS = [
   { id: "vehiculos", label: "Vehículos", icon: Truck },
