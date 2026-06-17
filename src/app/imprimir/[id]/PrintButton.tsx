@@ -139,22 +139,31 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
   <style>
     @page {
       size: 8.5in 5.5in;
-      margin: 12mm 15mm;
+      margin: 6mm 8mm;
     }
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
+      width: 8.5in;
+      height: 5.5in;
       overflow: hidden;
       background: white;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
+    #tiquete-root {
+      width: calc(8.5in - 16mm);
+      height: calc(5.5in - 12mm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
   </style>
 </head>
 <body>
-  ${generarHTMLTiquete(tiquete)}
+  <div id="tiquete-root">
+    ${generarHTMLTiquete(tiquete)}
+  </div>
 </body>
 </html>`);
 
