@@ -5,8 +5,9 @@ import { Scale } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-export default async function ImprimirTiquetePage({ params }: { params: { id: string } }) {
-  const tiqueteId = parseInt(params.id);
+export default async function ImprimirTiquetePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const tiqueteId = parseInt(id);
   if (isNaN(tiqueteId)) notFound();
 
   const tiquete = await prisma.tiquetes.findUnique({
