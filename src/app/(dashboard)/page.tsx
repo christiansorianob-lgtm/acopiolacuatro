@@ -1,4 +1,5 @@
 import { Activity, Scale, CheckCircle2, TrendingUp, History } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   return (
@@ -94,10 +95,10 @@ export default function DashboardPage() {
         <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-2xl p-6 min-h-[300px]">
           <h3 className="text-lg font-semibold text-white mb-4">Acciones Rápidas</h3>
           <div className="space-y-3">
-            <button className="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
+            <Link href="/recepcion" className="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
               <Scale className="w-5 h-5" />
               Nuevo Pesaje
-            </button>
+            </Link>
           </div>
         </div>
       </div>

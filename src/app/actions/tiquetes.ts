@@ -1,0 +1,91 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
+export async function crearTiqueteIngreso(data: {
+  vehiculoId: number;
+  conductorId: number;
+  proveedorId?: number;
+  clienteId?: number;
+  origenId?: number;
+  destinoId?: number;
+  productoId?: number;
+  pesoEntrada: number;
+  remision?: string;
+  observaciones?: string;
+  usuarioEntradaId: number;
+}) {
+  try {
+    // Transacción para asegurar la asignación del consecutivo correcto
+    const tiquete = await prisma.$transaction(async (tx) => {
+      // Obtener el número máximo actual
+      const lastTiquete = await tx.tiquetes.findFirst({
+        orderBy: { numero: 'desc' },
+        select: { numero: true }
+      });
+
+      const nextNumero = lastTiquete ? lastTiquete.numero + 1 : 1;
+
+      // Obtener los nombres actuales de las entidades para guardarlos estáticamente en el tiquete (Snapshot)
+      const vehiculo = await tx.vehiculos.findUnique({ where: { id: data.vehiculoId }});
+      const conductor = await tx.conductores.findUnique({ where: { id: data.conductorId }});
+      const proveedor = data.proveedorId ? await tx.proveedores.findUnique({ where: { id: data.proveedorId }}) : null;
+      const cliente = data.clienteId ? await tx.clientes.findUnique({ where: { id: data.clienteId }}) : null;
+      const origen = data.origenId ? await tx.origenes.findUnique({ where: { id: data.origenId }}) : null;
+      const destino = data.destinoId ? await tx.destinos.findUnique({ where: { id: data.destinoId }}) : null;
+      const producto = data.productoId ? await tx.productos.findUnique({ where: { id: data.productoId }}) : null;
+
+      if (!vehiculo || !conductor) {
+        throw new Error("Vehículo o Conductor inválido");
+      }
+
+      // Crear el tiquete
+      return await tx.tiquetes.create({
+        data: {
+          numero: nextNumero,
+          tipo: "INGRESO",
+          estado: "ABIERTO",
+          
+          vehiculoId: data.vehiculoId,
+          placa: vehiculo.placa,
+          
+          conductorId: data.conductorId,
+          conductorNombre: conductor.nombre,
+          
+          proveedorId: data.proveedorId,
+          proveedorNombre: proveedor?.nombre,
+          
+          clienteId: data.clienteId,
+          clienteNombre: cliente?.nombre,
+          
+          origenId: data.origenId,
+          origenNombre: origen?.nombre,
+          
+          destinoId: data.destinoId,
+          destinoNombre: destino?.nombre,
+          
+          productoId: data.productoId,
+          productoNombre: producto?.nombre,
+          
+          pesoEntrada: data.pesoEntrada,
+          fechaEntrada: new Date(),
+          
+          remision: data.remision,
+          observaciones: data.observaciones,
+          
+          usuarioEntradaId: data.usuarioEntradaId
+        }
+      });
+    });
+
+    revalidatePath("/recepcion");
+    revalidatePath("/historial");
+    revalidatePath("/"); // Dashboard
+
+    return { success: true, data: tiquete };
+  } catch (error: any) {
+    console.error("Error al crear tiquete de ingreso:", error);
+    return { success: false, error: error.message || "Error al crear el tiquete de ingreso" };
+  }
+}
