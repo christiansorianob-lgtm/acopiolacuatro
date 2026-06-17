@@ -28,6 +28,6 @@ export const config = {
      * - manifest.json (PWA manifest)
      * - login (auth page)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest.json|login|imprimir).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|manifest.json|login|imprimir|verificar).*)",
   ],
 };

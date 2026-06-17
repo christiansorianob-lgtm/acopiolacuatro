@@ -7,7 +7,7 @@ export function PrintButton() {
       .map(el => el.outerHTML)
       .join('\\n');
 
-    const ventana = window.open('', '_blank', 'width=850,height=550');
+    const ventana = window.open('', '_blank', 'width=816,height=1056');
     if (!ventana) {
       alert("Por favor habilita las ventanas emergentes (pop-ups) para imprimir el tiquete.");
       return;
@@ -21,18 +21,19 @@ export function PrintButton() {
         ${styles}
         <style>
           @page {
-            size: 8.5in 5.5in landscape;
-            margin: 5mm 8mm;
+            size: 8.5in 11in;
+            margin: 8mm 10mm;
           }
           body {
             margin: 0;
+            font-family: Arial, sans-serif;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             background: white !important;
           }
           /* Ensure wrapper takes full page but doesn't overflow */
           #ticket-content {
-            max-height: 5.3in;
+            max-height: 10.5in;
             overflow: hidden;
             page-break-after: avoid;
             page-break-inside: avoid;
