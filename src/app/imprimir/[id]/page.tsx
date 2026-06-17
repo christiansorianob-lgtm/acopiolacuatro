@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ClientPrint } from "./ClientPrint";
+import { PrintButton } from "./PrintButton";
 import { Scale } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -156,14 +157,7 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           </div>
           
           {/* Actions (Not Printed) */}
-          <div className="mt-12 text-center print:hidden">
-            <button 
-              onClick={() => window.print()} 
-              className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors"
-            >
-              Imprimir Tiquete
-            </button>
-          </div>
+          <PrintButton />
 
         </div>
       </div>
