@@ -41,99 +41,104 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
         {/* ClientPrint handles window.print() on mount */}
         <ClientPrint />
 
-        <div className="bg-white p-8 max-w-2xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full">
+        {/* Adjust width and padding for half-letter print: 5.5 x 8.5 in */}
+        <div className="bg-white p-6 max-w-xl w-full rounded-xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:max-w-full print:text-sm">
           
-          {/* Header */}
-          <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-slate-900 text-white rounded-lg print:border-2 print:border-slate-900 print:bg-white print:text-slate-900">
-                <Scale className="w-8 h-8" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-black uppercase tracking-widest text-slate-900">Centro Acopio</h1>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">Tiquete de Báscula</p>
-              </div>
+          {/* Header Agrovaspalma */}
+          <div className="text-center pb-4 mb-4 border-b-2 border-slate-900">
+            <h1 className="text-xl font-black uppercase text-slate-900 tracking-wider">SOCIEDAD AGROVASPALMA S.A.S.</h1>
+            <p className="text-xs font-bold text-slate-700">NIT: 901.666.764-5</p>
+            <p className="text-[10px] text-slate-600 font-medium">KDX 9-1 B Vrd Llano Grande - Norte de Santander</p>
+            <p className="text-[10px] text-slate-600 font-medium">TEL: 315 393 0918</p>
+            <p className="text-[10px] text-slate-600 font-medium">facturacion@agrovaspalma.com</p>
+          </div>
+
+          {/* Tiquete Info */}
+          <div className="flex justify-between items-end mb-4">
+            <div>
+              <h2 className="text-base font-black uppercase tracking-widest text-slate-900">Centro Acopio</h2>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Tiquete de Báscula</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Tiquete N°</p>
-              <p className="text-4xl font-black text-slate-900">#{tiquete.numero?.toString().padStart(4, '0') || '---'}</p>
-              <p className="text-xs font-bold text-slate-400 mt-2 uppercase">{tiquete.estado || '---'}</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Tiquete N°</p>
+              <p className="text-3xl font-black text-slate-900 leading-none">#{tiquete.numero?.toString().padStart(4, '0') || '---'}</p>
+              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">{tiquete.estado || '---'}</p>
             </div>
           </div>
 
           {/* Data Grid */}
-          <div className="grid grid-cols-2 gap-x-8 gap-y-6 mb-8">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Vehículo</p>
-              <p className="font-black text-lg text-slate-900">{tiquete.placa || '---'}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Vehículo</p>
+              <p className="font-black text-sm text-slate-900">{tiquete.placa || '---'}</p>
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Conductor</p>
-              <p className="font-black text-lg text-slate-900">{tiquete.conductorNombre || '---'}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Conductor</p>
+              <p className="font-black text-sm text-slate-900 truncate">{tiquete.conductorNombre || '---'}</p>
             </div>
             
             {tiquete.proveedorNombre && (
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Proveedor / Finca</p>
-                <p className="font-bold text-slate-700">{tiquete.proveedorNombre}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Proveedor / Finca</p>
+                <p className="font-bold text-xs text-slate-700 truncate">{tiquete.proveedorNombre}</p>
               </div>
             )}
             {tiquete.clienteNombre && (
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Cliente / Destino</p>
-                <p className="font-bold text-slate-700">{tiquete.clienteNombre}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Cliente / Destino</p>
+                <p className="font-bold text-xs text-slate-700 truncate">{tiquete.clienteNombre}</p>
               </div>
             )}
             
             {tiquete.productoNombre && (
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Producto</p>
-                <p className="font-bold text-slate-700">{tiquete.productoNombre}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Producto</p>
+                <p className="font-bold text-xs text-slate-700 truncate">{tiquete.productoNombre}</p>
               </div>
             )}
             {tiquete.origenNombre && (
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Origen</p>
-                <p className="font-bold text-slate-700">{tiquete.origenNombre}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Origen</p>
+                <p className="font-bold text-xs text-slate-700 truncate">{tiquete.origenNombre}</p>
               </div>
             )}
           </div>
 
           {/* Pesos */}
-          <div className="bg-slate-50 rounded-xl p-6 border-2 border-slate-200 mb-8 print:bg-white print:border-slate-300">
-            <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-4 print:bg-white print:border-slate-300">
+            <div className="grid grid-cols-3 gap-2 text-center">
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Peso Entrada</p>
-                <p className="text-2xl font-mono font-bold text-slate-700">{tiquete.pesoEntrada || 0} Kg</p>
-                <p className="text-[10px] text-slate-400 font-semibold mt-1">{formatearFecha(tiquete.fechaEntrada)}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Entrada</p>
+                <p className="text-xl font-mono font-bold text-slate-700">{tiquete.pesoEntrada || 0} <span className="text-sm">Kg</span></p>
+                <p className="text-[9px] text-slate-400 font-semibold mt-1">{formatearFecha(tiquete.fechaEntrada)}</p>
               </div>
-              <div className="border-l border-r border-slate-200">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Peso Salida</p>
-                <p className="text-2xl font-mono font-bold text-slate-700">{tiquete.pesoSalida || "---"} Kg</p>
-                <p className="text-[10px] text-slate-400 font-semibold mt-1">{tiquete.fechaSalida ? formatearFecha(tiquete.fechaSalida) : "Pendiente"}</p>
+              <div className="border-l border-r border-slate-200 px-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Salida</p>
+                <p className="text-xl font-mono font-bold text-slate-700">{tiquete.pesoSalida || "---"} <span className="text-sm">Kg</span></p>
+                <p className="text-[9px] text-slate-400 font-semibold mt-1">{tiquete.fechaSalida ? formatearFecha(tiquete.fechaSalida) : "Pendiente"}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-2">Peso Neto</p>
-                <p className="text-3xl font-mono font-black text-slate-900">{tiquete.pesoNeto || "---"} Kg</p>
+                <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest mb-1">Neto</p>
+                <p className="text-2xl font-mono font-black text-slate-900">{tiquete.pesoNeto || "---"} <span className="text-sm">Kg</span></p>
               </div>
             </div>
           </div>
 
           {/* Info Extra */}
           {(tiquete.remision || tiquete.observaciones) && (
-            <div className="mb-8 border-t border-slate-200 pt-6">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Información Adicional</h3>
-              <div className="grid grid-cols-2 gap-4">
+            <div className="mb-4 border-t border-slate-200 pt-3">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Adicional</h3>
+              <div className="grid grid-cols-2 gap-2">
                 {tiquete.remision && (
                   <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Remisión N°</p>
-                    <p className="font-mono text-sm font-bold text-slate-700">{tiquete.remision}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Remisión</p>
+                    <p className="font-mono text-xs font-bold text-slate-700">{tiquete.remision}</p>
                   </div>
                 )}
                 {tiquete.observaciones && (
                   <div className={!tiquete.remision ? "col-span-2" : ""}>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Observaciones</p>
-                    <p className="text-sm text-slate-600">{tiquete.observaciones}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Observaciones</p>
+                    <p className="text-xs text-slate-600 line-clamp-2">{tiquete.observaciones}</p>
                   </div>
                 )}
               </div>
@@ -141,17 +146,17 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
           )}
 
           {/* Firmas */}
-          <div className="mt-16 grid grid-cols-2 gap-8">
+          <div className="mt-8 grid grid-cols-2 gap-4">
             <div className="text-center">
-              <div className="border-t-2 border-slate-300 w-4/5 mx-auto pt-2">
-                <p className="text-xs font-bold uppercase text-slate-500">Operador de Báscula</p>
-                <p className="text-[10px] text-slate-400 uppercase mt-1">{tiquete.usuarioSalida?.nombre || tiquete.usuarioEntrada?.nombre || "N/A"}</p>
+              <div className="border-t border-slate-300 w-4/5 mx-auto pt-1">
+                <p className="text-[9px] font-bold uppercase text-slate-500">Báscula</p>
+                <p className="text-[9px] text-slate-400 uppercase">{tiquete.usuarioSalida?.nombre || tiquete.usuarioEntrada?.nombre || "N/A"}</p>
               </div>
             </div>
             <div className="text-center">
-              <div className="border-t-2 border-slate-300 w-4/5 mx-auto pt-2">
-                <p className="text-xs font-bold uppercase text-slate-500">Firma Conductor</p>
-                <p className="text-[10px] text-slate-400 uppercase mt-1">C.C. {(tiquete.conductorNombre || "").split(" ").slice(-1)}</p>
+              <div className="border-t border-slate-300 w-4/5 mx-auto pt-1">
+                <p className="text-[9px] font-bold uppercase text-slate-500">Conductor</p>
+                <p className="text-[9px] text-slate-400 uppercase">C.C. {(tiquete.conductorNombre || "").split(" ").slice(-1)}</p>
               </div>
             </div>
           </div>

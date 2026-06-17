@@ -154,7 +154,7 @@ export default async function DashboardPage() {
               {recientes.map((r) => (
                 <div key={r.id} className="flex items-center justify-between p-4 bg-slate-800/20 border border-slate-800/50 rounded-xl">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-cyan-400 border border-slate-700">
+                    <div className="px-3 h-12 bg-slate-800 rounded-lg flex flex-col items-center justify-center font-bold text-cyan-400 border border-slate-700 text-sm whitespace-nowrap">
                       {formatHora(r.fechaEntrada)}
                     </div>
                     <div>
