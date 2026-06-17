@@ -24,10 +24,12 @@ export const config = {
      * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - favicon.ico, logo.png (static files)
      * - manifest.json (PWA manifest)
      * - login (auth page)
+     * - imprimir (public print view)
+     * - verificar (public verification view)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest.json|login|imprimir|verificar).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|logo.png|manifest.json|login|imprimir|verificar).*)",
   ],
 };
