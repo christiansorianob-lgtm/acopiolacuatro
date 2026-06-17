@@ -54,9 +54,9 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
         </div>
 
         <!-- FILA 1: PESAJE + VEHÍCULO -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
+        <div class="fila-pesaje-vehiculo" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
           
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoBalanza} PESAJE</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:7pt;">
               <div>
@@ -78,7 +78,7 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
             </div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoCamion} VEHÍCULO Y CONDUCTOR</div>
             <div style="font-size:7pt;display:grid;grid-template-columns:auto 1fr;gap:2px 8px;">
               <span style="color:#666;">Placa:</span><span style="font-weight:700;font-size:9pt;text-transform:uppercase;">${tiquete.placa}</span>
@@ -91,9 +91,9 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
         </div>
 
         <!-- FILA 2: PRODUCTO + OTROS DATOS -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
+        <div class="fila-producto-datos" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
           
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoPlanta} INFORMACIÓN DEL PRODUCTO</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;font-size:7pt;">
               <div><span style="color:#666;">Proveedor: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.proveedorNombre}</span></div>
@@ -104,7 +104,7 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
             </div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoDoc} OTROS DATOS</div>
             <div style="font-size:7pt;">
               <div><span style="color:#666;">Precintos: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.precintos || '---'}</span></div>
@@ -115,21 +115,21 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
         </div>
 
         <!-- FILA 3: FIRMAS + QR -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;flex:1.5;min-height:0;">
+        <div class="fila-firmas" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;flex:1.2;min-height:0;">
           
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
             <div style="font-weight:700;text-align:center;margin-bottom:auto;">OPERADOR BÁSCULA</div>
             <div>Nombre: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
             <div style="margin-top:8px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
             <div style="font-weight:700;text-align:center;margin-bottom:auto;">RESPONSABLE RECEPCIÓN</div>
             <div>Nombre: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
             <div style="margin-top:8px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
           </div>
 
-          <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;justify-content:center;">
+          <div class="seccion" style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;justify-content:center;">
             <div style="display:flex;gap:6px;align-items:center;">
               <img src="${tiquete.qrUrl}" style="width:55px;height:55px;flex-shrink:0;" />
               <div style="font-size:5.5pt;color:#444;line-height:1.2;">
@@ -154,10 +154,18 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
     <div className="min-h-screen bg-slate-100 print:bg-white flex flex-col items-center justify-center py-8 print:py-0 print:block">
       
       <style dangerouslySetInnerHTML={{__html: `
+        .instruccion-impresion {
+          display: block;
+        }
+
         @media print {
+          .instruccion-impresion {
+            display: none;
+          }
+
           @page {
             size: 8.5in 5.5in;
-            margin: 5mm 6mm;
+            margin: 3mm 4mm;
           }
 
           html, body {
@@ -169,7 +177,32 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
 
           #tiquete-wrapper {
             width: 100% !important;
+            height: calc(5.5in - 6mm) !important;
+            min-height: calc(5.5in - 6mm) !important;
+            display: flex !important;
+            flex-direction: column !important;
             overflow: hidden !important;
+          }
+
+          #tiquete-wrapper .fila-pesaje-vehiculo {
+            flex: 2 !important;
+            min-height: 0 !important;
+          }
+
+          #tiquete-wrapper .fila-producto-datos {
+            flex: 2 !important;
+            min-height: 0 !important;
+          }
+
+          #tiquete-wrapper .fila-firmas {
+            flex: 1.2 !important;
+            min-height: 0 !important;
+          }
+
+          #tiquete-wrapper .seccion {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
           }
         }
 
@@ -184,6 +217,22 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
           }
         }
       `}} />
+
+      <div className="instruccion-impresion" style={{
+        background:'#fff3cd',
+        border:'1px solid #ffc107',
+        padding:'10px 16px',
+        marginBottom:'16px',
+        borderRadius:'6px',
+        fontSize:'13px',
+        color:'#856404',
+        fontFamily:'Arial,sans-serif'
+      }}>
+        ⚠️ <strong>Antes de imprimir:</strong> En el diálogo de Chrome ve a 
+        <strong>Más ajustes</strong> y desactiva 
+        <strong>"Encabezados y pies de página"</strong>. 
+        Solo necesitas hacerlo una vez, Chrome lo recuerda.
+      </div>
 
       <div id="tiquete-wrapper-container" className="w-full h-full flex items-center justify-center print:block print:w-full print:h-full">
         <div id="tiquete-wrapper" dangerouslySetInnerHTML={{ __html: generarHTMLTiquete(tiquete) }} />
