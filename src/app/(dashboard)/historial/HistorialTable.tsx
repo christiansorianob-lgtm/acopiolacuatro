@@ -44,9 +44,11 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
 
     setSaving(true);
     const res = await registrarSalidaTiquete(selectedTiquete.id, Number(pesoSalida), usuarioId);
-    if (res.success) {
+    if (res.success && res.data) {
       alert(`¡Salida registrada exitosamente! Peso Neto: ${res.data?.pesoNeto} Kg`);
       setSelectedTiquete(null);
+      // Auto-open print window
+      window.open(`/imprimir/${res.data.id}`, '_blank');
       router.refresh();
     } else {
       alert(res.error);
@@ -155,7 +157,10 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
                         Dar Salida
                       </button>
                     ) : (
-                      <button className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition-colors">
+                      <button 
+                        onClick={() => window.open(`/imprimir/${t.id}`, '_blank')}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition-colors"
+                      >
                         Ver Tiquete
                       </button>
                     )}
