@@ -82,7 +82,7 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
                 <div style="font-size:10pt;font-weight:700;">${tiquete.pesoSalida !== null ? tiquete.pesoSalida.toLocaleString('es-CO') : '0'} kg</div>
               </div>
             </div>
-            <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:6px;padding:6px 10px;margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:6px;padding:6px 10px;margin-top:6px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
               <span style="font-weight:700;font-size:9pt;color:#2e7d32;text-transform:uppercase;letter-spacing:0.5px;">PESO NETO:</span>
               <span style="font-size:18pt;font-weight:900;color:#1a1a1a;font-family:Arial,sans-serif;letter-spacing:-0.5px;">${tiquete.pesoNeto !== null ? tiquete.pesoNeto.toLocaleString('es-CO') : '---'} kg</span>
             </div>
@@ -152,7 +152,7 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
         </div>
 
         <!-- PIE -->
-        <div style="background:#2e7d32;color:white;text-align:center;font-size:7pt;font-weight:700;padding:4px;border-radius:4px;flex-shrink:0;">
+        <div style="background:#2e7d32;color:white;text-align:center;font-size:7pt;font-weight:700;padding:6px;width:100%;border-radius:4px;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box;">
           Este tiquete no tiene validez sin sello y firma.
         </div>
 
@@ -177,24 +177,16 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
             print-color-adjust: exact !important;
           }
 
-          body {
-            display: block !important;
-            min-height: unset !important;
-          }
-
-          body > div:first-of-type {
-            display: block !important;
-            min-height: unset !important;
-            padding: 0 !important;
-            background: white !important;
-          }
-
           #tiquete-wrapper-container {
-            display: block !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
             height: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
+            z-index: 9999 !important;
+            background: white !important;
           }
 
           #tiquete-wrapper {
