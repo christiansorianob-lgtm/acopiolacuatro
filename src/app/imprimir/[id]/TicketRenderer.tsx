@@ -177,14 +177,21 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
             print-color-adjust: exact !important;
           }
 
+          #tiquete-wrapper-container {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
           #tiquete-wrapper {
-            width: 8.5in !important;
-            height: 5.5in !important;
-            min-height: 5.5in !important;
+            width: 100% !important;
+            height: 100% !important;
             display: flex !important;
             flex-direction: column !important;
             overflow: hidden !important;
-            padding: 2mm 3mm !important;
+            padding: 4mm 6mm !important;
             box-sizing: border-box !important;
           }
 
