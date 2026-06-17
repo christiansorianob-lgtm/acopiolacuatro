@@ -15,9 +15,10 @@ interface SearchableSelectProps {
   onChange: (value: number | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  onCreateNew?: (searchValue: string) => void;
 }
 
-export function SearchableSelect({ options, value, onChange, placeholder = "Seleccionar...", disabled = false }: SearchableSelectProps) {
+export function SearchableSelect({ options, value, onChange, placeholder = "Seleccionar...", disabled = false, onCreateNew }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -95,6 +96,22 @@ export function SearchableSelect({ options, value, onChange, placeholder = "Sele
               ))
             )}
           </ul>
+          
+          {onCreateNew && (
+            <div className="p-2 border-t border-slate-800/50 bg-slate-900/80">
+              <button
+                type="button"
+                onClick={() => {
+                  onCreateNew(search);
+                  setIsOpen(false);
+                }}
+                className="w-full py-2 px-3 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <span className="text-lg leading-none">+</span>
+                {search ? `Añadir "${search}"` : "Añadir Nuevo"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
