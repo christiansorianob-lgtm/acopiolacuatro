@@ -14,15 +14,6 @@ export async function crearTiqueteIngreso(data: {
   pesoEntrada: number;
   remision?: string;
   observaciones?: string;
-  tipoFruta?: string;
-  variedad?: string;
-  estadoFruta?: string;
-  porcentajeImpurezas?: string;
-  lote?: string;
-  finca?: string;
-  centroCosto?: string;
-  horaDescargue?: string;
-  transportador?: string;
   usuarioEntradaId: number;
 }) {
   try {
@@ -82,16 +73,6 @@ export async function crearTiqueteIngreso(data: {
           
           remision: data.remision,
           observaciones: data.observaciones,
-          
-          tipoFruta: data.tipoFruta,
-          variedad: data.variedad,
-          estadoFruta: data.estadoFruta,
-          porcentajeImpurezas: data.porcentajeImpurezas,
-          lote: data.lote,
-          finca: data.finca,
-          centroCosto: data.centroCosto,
-          horaDescargue: data.horaDescargue,
-          transportador: data.transportador,
           
           usuarioEntradaId: data.usuarioEntradaId
         }

@@ -2,12 +2,10 @@
 
 export function PrintButton() {
   const imprimir = () => {
-    const content = document.getElementById('ticket-content')?.outerHTML || '';
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map(el => el.outerHTML)
-      .join('\\n');
+    const contenido = document.getElementById('ticket-content')?.innerHTML;
+    if (!contenido) return;
 
-    const ventana = window.open('', '_blank', 'width=816,height=1056');
+    const ventana = window.open('', '_blank', 'width=816,height=528');
     if (!ventana) {
       alert("Por favor habilita las ventanas emergentes (pop-ups) para imprimir el tiquete.");
       return;
@@ -16,51 +14,50 @@ export function PrintButton() {
     ventana.document.write(`
       <!DOCTYPE html>
       <html>
-      <head>
-        <title>Tiquete Báscula</title>
-        ${styles}
-        <style>
-          @page {
-            size: 8.5in 11in;
-            margin: 8mm 10mm;
-          }
-          body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            background: white !important;
-          }
-          /* Ensure wrapper takes full page but doesn't overflow */
-          #ticket-content {
-            max-height: 10.5in;
-            overflow: hidden;
-            page-break-after: avoid;
-            page-break-inside: avoid;
-            box-shadow: none !important;
-            border: none !important;
-            margin: 0 !important;
-            max-width: 100% !important;
-          }
-          * {
-            page-break-inside: avoid;
-          }
-        </style>
-      </head>
-      <body>
-        ${content}
-        <script>
-          // Esperar a que los estilos y fuentes se apliquen
-          setTimeout(() => {
-            window.focus();
-            window.print();
-            window.close();
-          }, 500);
-        </script>
-      </body>
+        <head>
+          <title></title>
+          <style>
+            @page {
+              size: 8.5in 5.5in;
+              margin: 4mm 6mm;
+            }
+            * {
+              box-sizing: border-box;
+              page-break-inside: avoid;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: Arial, sans-serif;
+              font-size: 7.5px;
+              width: 8.5in;
+              max-height: 5.5in;
+              overflow: hidden;
+            }
+            #ticket-content {
+              width: 100%;
+              max-height: 5.5in;
+            }
+            /* Reducir todos los paddings internos */
+            .seccion { padding: 4px 6px; }
+            .header-empresa { padding: 4px 6px; }
+            .bloque-pesos { padding: 4px; }
+            .firmas { padding-top: 28px; }
+          </style>
+        </head>
+        <body>
+          <div id="ticket-content">${contenido}</div>
+        </body>
       </html>
     `);
     ventana.document.close();
+    ventana.onload = () => {
+      ventana.focus();
+      ventana.print();
+      ventana.close();
+    };
   };
 
   return (

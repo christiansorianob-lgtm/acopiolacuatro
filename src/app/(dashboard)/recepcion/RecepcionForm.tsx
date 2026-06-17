@@ -46,16 +46,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
   const [remision, setRemision] = useState("");
   const [observaciones, setObservaciones] = useState("");
 
-  // New optional fields
-  const [tipoFruta, setTipoFruta] = useState("");
-  const [variedad, setVariedad] = useState("");
-  const [estadoFruta, setEstadoFruta] = useState("");
-  const [porcentajeImpurezas, setPorcentajeImpurezas] = useState("");
-  const [lote, setLote] = useState("");
-  const [finca, setFinca] = useState("");
-  const [centroCosto, setCentroCosto] = useState("");
-  const [horaDescargue, setHoraDescargue] = useState("");
-  const [transportador, setTransportador] = useState("");
+
 
   // Quick Create State
   const [quickCreateType, setQuickCreateType] = useState<EntityType | null>(null);
@@ -91,15 +82,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
       pesoEntrada: pesoCapturado,
       remision,
       observaciones,
-      tipoFruta,
-      variedad,
-      estadoFruta,
-      porcentajeImpurezas,
-      lote,
-      finca,
-      centroCosto,
-      horaDescargue,
-      transportador,
+
       usuarioEntradaId: usuarioId
     });
 
@@ -114,15 +97,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
       setProductoId(null);
       setRemision("");
       setObservaciones("");
-      setTipoFruta("");
-      setVariedad("");
-      setEstadoFruta("");
-      setPorcentajeImpurezas("");
-      setLote("");
-      setFinca("");
-      setCentroCosto("");
-      setHoraDescargue("");
-      setTransportador("");
+
       setPesoCapturado(0);
       router.refresh();
     } else {
@@ -320,47 +295,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
           </div>
         </div>
 
-        <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-white border-b border-slate-800 pb-3 mb-5">Detalles de la Carga (Opcional)</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Tipo de fruta</label>
-              <input type="text" value={tipoFruta} onChange={(e) => setTipoFruta(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Variedad</label>
-              <input type="text" value={variedad} onChange={(e) => setVariedad(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Estado de la fruta</label>
-              <input type="text" value={estadoFruta} onChange={(e) => setEstadoFruta(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Fresca, Verde, Mixta..." disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">% Impurezas</label>
-              <input type="text" value={porcentajeImpurezas} onChange={(e) => setPorcentajeImpurezas(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Lote</label>
-              <input type="text" value={lote} onChange={(e) => setLote(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Finca</label>
-              <input type="text" value={finca} onChange={(e) => setFinca(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Centro de costo</label>
-              <input type="text" value={centroCosto} onChange={(e) => setCentroCosto(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Hora de descargue</label>
-              <input type="text" value={horaDescargue} onChange={(e) => setHoraDescargue(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Ej. 10:30 AM" disabled={saving} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-300">Transportador</label>
-              <input type="text" value={transportador} onChange={(e) => setTransportador(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors" disabled={saving} />
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Columna Derecha: Pantalla de Báscula */}

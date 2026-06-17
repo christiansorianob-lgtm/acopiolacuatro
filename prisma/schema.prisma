@@ -146,16 +146,6 @@ model tiquetes {
   precintos        String?
   observaciones    String?
 
-  tipoFruta        String?
-  variedad         String?
-  estadoFruta      String?
-  porcentajeImpurezas String?
-  lote             String?
-  finca            String?
-  centroCosto      String?
-  horaDescargue    String?
-  transportador    String?
-
   usuarioEntradaId Int
   usuarioEntrada   usuarios @relation("UsuarioEntrada", fields: [usuarioEntradaId], references: [id])
 

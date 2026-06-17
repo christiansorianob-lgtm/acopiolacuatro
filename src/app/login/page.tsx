@@ -55,8 +55,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-[var(--color-brand-surface)] border border-[var(--color-brand-border)] rounded-2xl shadow-2xl p-8 flex flex-col items-center">
         
         <div className="mb-8 text-center">
-          <div className="w-16 h-16 bg-[var(--color-brand-primary)]/20 text-[var(--color-brand-primary)] rounded-full flex items-center justify-center mx-auto mb-4">
-            <KeyRound size={32} />
+          <div className="mx-auto mb-4 flex justify-center">
+            <img src="/logo.png" alt="Agrovaspalma Logo" className="h-24 w-auto object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-[var(--color-brand-text)] mb-2">Acceso al Sistema</h1>
           <p className="text-[var(--color-brand-text-muted)]">Centro de Acopio Fruta de Palma</p>

@@ -23,8 +23,8 @@ export default function Sidebar() {
   return (
     <aside className="hidden md:flex w-64 flex-col bg-slate-950 border-r border-slate-800 h-screen sticky top-0 transition-all duration-300">
       <div className="h-16 flex items-center px-6 border-b border-slate-800/50">
-        <div className="flex items-center gap-2 text-cyan-400">
-          <Leaf className="w-6 h-6" />
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Agrovaspalma Logo" className="w-8 h-8 object-contain" />
           <span className="text-lg font-bold tracking-tight text-white">Centro Acopio</span>
         </div>
       </div>
