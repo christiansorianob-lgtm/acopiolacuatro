@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model empresas {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  nit       String
+  direccion String
+  telefono  String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model usuarios {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  cedula    String   @unique
+  rol       String   // OPERADOR / ADMINISTRADOR
+  pin       String   // hash bcrypt
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  tiquetesEntrada tiquetes[] @relation("UsuarioEntrada")
+  tiquetesSalida  tiquetes[] @relation("UsuarioSalida")
+}
+
+model vehiculos {
+  id        Int      @id @default(autoincrement())
+  placa     String   @unique
+  tipo      String
+  tara      Int?
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model conductores {
+  id        Int      @id @default(autoincrement())
+  cedula    String   @unique
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model proveedores {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model clientes {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model origenes {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model destinos {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model productos {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tiquetes tiquetes[]
+}
+
+model tiquetes {
+  id               Int      @id @default(autoincrement())
+  numero           Int      @unique
+  tipo             String   // INGRESO / DESPACHO
+  estado           String   // ABIERTO / CERRADO / ANULADO
+
+  placa            String
+  vehiculoId       Int
+  vehiculo         vehiculos @relation(fields: [vehiculoId], references: [id])
+
+  conductorNombre  String
+  conductorId      Int
+  conductor        conductores @relation(fields: [conductorId], references: [id])
+
+  proveedorNombre  String?
+  proveedorId      Int?
+  proveedor        proveedores? @relation(fields: [proveedorId], references: [id])
+
+  clienteNombre    String?
+  clienteId        Int?
+  cliente          clientes? @relation(fields: [clienteId], references: [id])
+
+  origenNombre     String?
+  origenId         Int?
+  origen           origenes? @relation(fields: [origenId], references: [id])
+
+  destinoNombre    String?
+  destinoId        Int?
+  destino          destinos? @relation(fields: [destinoId], references: [id])
+
+  productoNombre   String?
+  productoId       Int?
+  producto         productos? @relation(fields: [productoId], references: [id])
+
+  pesoEntrada      Int
+  fechaEntrada     DateTime @default(now())
+
+  pesoSalida       Int?
+  fechaSalida      DateTime?
+  pesoNeto         Int?
+
+  remision         String?
+  precintos        String?
+  observaciones    String?
+
+  usuarioEntradaId Int
+  usuarioEntrada   usuarios @relation("UsuarioEntrada", fields: [usuarioEntradaId], references: [id])
+
+  usuarioSalidaId  Int?
+  usuarioSalida    usuarios? @relation("UsuarioSalida", fields: [usuarioSalidaId], references: [id])
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([numero])
+  @@index([placa])
+  @@index([estado])
+  @@index([fechaEntrada])
+  @@index([proveedorId])
+  @@index([clienteId])
+  @@index([tipo])
+}
+
+model bitacora_auditoria {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  accion    String
+  entidad   String
+  entidadId Int
+  detalle   Json
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model backups {
+  id        Int      @id @default(autoincrement())
+  tipo      String   // AUTO / MANUAL
+  estado    String   // OK / ERROR
+  registros Int
+  tamano    Int?     // bytes
+  url       String?
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-background: #0D1B2A;
+  --color-brand-surface: #1B263B;
+  --color-brand-border: #243447;
+  --color-brand-primary: #2196F3;
+  --color-brand-accent: #64B5F6;
+  --color-brand-text: #E6EDF3;
+  --color-brand-text-muted: #8899AA;
+  --color-brand-success: #27AE60;
+  --color-brand-warning: #F39C12;
+  --color-brand-error: #E74C3C;
+}
+
+/* Force dark theme globally */
+:root {
+  --background: var(--color-brand-background);
+  --foreground: var(--color-brand-text);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base print styles for ticket (Half-letter format) */
+@media print {
+  @page {
+    size: 8.5in 5.5in;
+    margin: 10mm;
+  }
+
+  /* Reset to light theme for printing to save ink */
+  body, html, * {
+    background-color: white !important;
+    color: black !important;
+    color-scheme: light !important;
+  }
+}
