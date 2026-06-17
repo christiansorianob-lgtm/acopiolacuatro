@@ -99,6 +99,10 @@ export default function DashboardPage() {
               <Scale className="w-5 h-5" />
               Nuevo Pesaje
             </Link>
+            <Link href="/historial" className="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 border border-slate-700 hover:border-slate-600">
+              <History className="w-5 h-5" />
+              Historial / Despacho
+            </Link>
           </div>
         </div>
       </div>

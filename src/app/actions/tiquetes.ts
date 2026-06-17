@@ -89,3 +89,33 @@ export async function crearTiqueteIngreso(data: {
     return { success: false, error: error.message || "Error al crear el tiquete de ingreso" };
   }
 }
+
+export async function registrarSalidaTiquete(id: number, pesoSalida: number, usuarioSalidaId: number) {
+  try {
+    const tiquete = await prisma.tiquetes.findUnique({ where: { id } });
+    if (!tiquete) throw new Error("Tiquete no encontrado");
+    if (tiquete.estado !== "ABIERTO") throw new Error("El tiquete ya está cerrado o anulado");
+
+    const pesoNeto = Math.abs(tiquete.pesoEntrada - pesoSalida);
+
+    const updated = await prisma.tiquetes.update({
+      where: { id },
+      data: {
+        pesoSalida,
+        pesoNeto,
+        fechaSalida: new Date(),
+        estado: "CERRADO",
+        usuarioSalidaId
+      }
+    });
+
+    revalidatePath("/historial");
+    revalidatePath("/recepcion");
+    revalidatePath("/"); // Dashboard
+
+    return { success: true, data: updated };
+  } catch (error: any) {
+    console.error("Error al registrar salida:", error);
+    return { success: false, error: error.message || "Error al registrar la salida" };
+  }
+}
