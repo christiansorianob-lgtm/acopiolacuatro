@@ -177,6 +177,18 @@ export function TicketRenderer({ tiquete }: { tiquete: any }) {
             print-color-adjust: exact !important;
           }
 
+          body {
+            display: block !important;
+            min-height: unset !important;
+          }
+
+          body > div:first-of-type {
+            display: block !important;
+            min-height: unset !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
           #tiquete-wrapper-container {
             display: block !important;
             width: 100% !important;
