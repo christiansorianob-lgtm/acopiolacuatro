@@ -212,7 +212,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Columna Izquierda: Formulario (2 columnas en LG) */}
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-2xl p-6">
+        <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-2xl p-6 relative z-10">
           <h2 className="text-lg font-semibold text-white border-b border-slate-800 pb-3 mb-5">Datos del Viaje</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
