@@ -85,7 +85,7 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
     const date = new Date(fechaStr);
     return date.toLocaleString("es-CO", { 
       day: "2-digit", month: "2-digit", year: "numeric",
-      hour: "2-digit", minute: "2-digit", hour12: true
+      hour: "2-digit", minute: "2-digit", hour12: true, timeZone: 'America/Bogota'
     });
   };
 

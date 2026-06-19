@@ -76,7 +76,7 @@ export default async function DashboardPage() {
   });
 
   const formatHora = (date: Date) => {
-    return new Date(date).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+    return new Date(date).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' });
   };
 
   return (
