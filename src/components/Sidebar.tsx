@@ -11,7 +11,7 @@ export default function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Recepción", href: "/recepcion", icon: Scale },
+    { name: "Pesaje", href: "/recepcion", icon: Scale },
     { name: "Historial", href: "/historial", icon: History },
   ];
 

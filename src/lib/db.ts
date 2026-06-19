@@ -12,6 +12,7 @@ export interface LocalConductor {
   id: number;
   cedula: string;
   nombre: string;
+  telefono?: string | null;
   activo: boolean;
 }
 
@@ -58,6 +59,7 @@ export interface LocalTiquete {
   vehiculoId: number;
   
   conductorNombre: string;
+  conductorTelefono: string | null;
   conductorId: number;
   
   proveedorNombre: string | null;

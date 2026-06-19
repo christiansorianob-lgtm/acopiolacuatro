@@ -8,7 +8,7 @@ export function PrintButton({ tiquete }: { tiquete: any }) {
   const imprimir = async () => {
     try {
       setImprimiendo(true);
-      const res = await fetch(`/api/imprimir/${tiquete.id}`);
+      const res = await fetch(`/api/imprimir/${tiquete.publicToken}`);
       
       if (!res.ok) {
         throw new Error('Error al generar el tiquete');

@@ -7,16 +7,18 @@ import QRCode from 'qrcode';
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const tiqueteId = parseInt(id);
-    if (isNaN(tiqueteId)) {
-      return new NextResponse('ID inválido', { status: 400 });
+    
+    if (!id || id.length < 10) {
+      return new NextResponse("Tiquete ID invalido", { status: 400 });
     }
 
     const tiqueteRaw = await prisma.tiquetes.findUnique({
-      where: { id: tiqueteId },
+      where: { publicToken: id },
       include: {
         usuarioEntrada: true,
         usuarioSalida: true,
+        conductor: true,
+        vehiculo: true,
       }
     });
 
@@ -53,9 +55,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       pesoNeto: tiqueteRaw.pesoNeto,
       placa: tiqueteRaw.placa,
       conductorNombre: tiqueteRaw.conductorNombre,
-      conductorCedula: tiqueteRaw.conductorNombre?.split(' ').slice(-1)[0] || '---',
+      conductorCedula: tiqueteRaw.conductor?.cedula || '---',
       proveedorNombre: tiqueteRaw.proveedorNombre || 'TERCERO',
       productoNombre: tiqueteRaw.productoNombre || 'PRODUCTO',
+      vehiculoTipo: tiqueteRaw.vehiculo?.tipo || '---',
       origenNombre: tiqueteRaw.origenNombre,
       destinoNombre: tiqueteRaw.destinoNombre,
       remision: tiqueteRaw.remision,
@@ -75,15 +78,22 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   <meta charset="UTF-8"/>
   <title>Impresión Tiquete #${String(tiquete.numero).padStart(6,'0')}</title>
   <style>
-    @page {
-      size: 8.5in 5.5in;
-      margin: 0;
+    @media print {
+      @page {
+        size: letter portrait;
+        margin: 0;
+      }
+      .ticket-container {
+        width: 215.9mm;
+        height: 139.7mm;
+        page-break-inside: avoid;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
     }
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
       background: white;
@@ -95,16 +105,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   </style>
 </head>
 <body>
-  <div style="
-    width: 8.5in;
-    height: 5.5in;
+  <div class="ticket-container" style="
     padding: 4mm 6mm;
     display: flex;
     flex-direction: column;
     gap: 3px;
-    font-size: 7pt;
+    font-size: 9pt;
     color: #1a1a1a;
-    overflow: hidden;
   ">
     
     <!-- ENCABEZADO -->
@@ -112,25 +119,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       <div style="display:flex;align-items:center;gap:8px;">
         <img src="${protocol}://${host}/logo.png" style="width:60px;height:60px;object-fit:contain;" />
         <div>
-          <div style="font-size:12pt;font-weight:900;line-height:1.1;">SOCIEDAD AGROVASPALMA S.A.S.</div>
-          <div style="font-size:7pt;color:#444;">NIT: 901.666.764-5</div>
-          <div style="font-size:7pt;color:#444;">📍 KDX 9-1 B Vrd Llano Grande - Norte de Santander</div>
-          <div style="font-size:7pt;color:#444;">📞 315 393 0918 &nbsp;✉ facturacion@agrovaspalma.com</div>
+          <div style="font-size:14pt;font-weight:900;line-height:1.1;">SOCIEDAD AGROVASPALMA S.A.S.</div>
+          <div style="font-size:9pt;color:#444;">NIT: 901.666.764-5</div>
+          <div style="font-size:9pt;color:#444;">📍 KDX 9-1 B Vrd Llano Grande - Norte de Santander</div>
+          <div style="font-size:9pt;color:#444;">📞 315 393 0918 &nbsp;✉ facturacion@agrovaspalma.com</div>
         </div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:9pt;font-weight:700;text-transform:uppercase;">Tiquete de Pesaje</div>
-        <div style="font-size:22pt;font-weight:900;color:#c0392b;line-height:1;">#${String(tiquete.numero).padStart(6,'0')}</div>
-        <div style="font-size:7pt;color:#444;">Fecha de emisión:</div>
-        <div style="font-size:7.5pt;font-weight:700;">${tiquete.fechaEntrada}</div>
+        <div style="font-size:11pt;font-weight:700;text-transform:uppercase;">Tiquete de Pesaje</div>
+        <div style="font-size:24pt;font-weight:900;color:#c0392b;line-height:1;">#${String(tiquete.numero).padStart(6,'0')}</div>
+        <div style="font-size:9pt;color:#444;">Fecha de emisión:</div>
+        <div style="font-size:9.5pt;font-weight:700;">${tiquete.fechaEntrada}</div>
       </div>
     </div>
 
     <!-- FILA 1: PESAJE + VEHÍCULO -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
       <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoBalanza} PESAJE</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:7pt;">
+        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:10pt;margin-bottom:4px;">${iconoBalanza} PESAJE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:9pt;">
           <div>
             <div style="color:#666;">Fecha y hora entrada:</div>
             <div style="font-weight:600;">${tiquete.fechaEntrada}</div>
@@ -139,25 +146,24 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           </div>
           <div style="text-align:right;">
             <div style="color:#666;">Peso Entrada:</div>
-            <div style="font-size:10pt;font-weight:700;">${tiquete.pesoEntrada?.toLocaleString('es-CO')} kg</div>
+            <div style="font-size:12pt;font-weight:700;">${tiquete.pesoEntrada?.toLocaleString('es-CO')} kg</div>
             <div style="color:#666;margin-top:4px;">Peso Salida:</div>
-            <div style="font-size:10pt;font-weight:700;">${tiquete.pesoSalida !== null ? tiquete.pesoSalida.toLocaleString('es-CO') : '0'} kg</div>
+            <div style="font-size:12pt;font-weight:700;">${tiquete.pesoSalida !== null ? tiquete.pesoSalida.toLocaleString('es-CO') : '0'} kg</div>
           </div>
         </div>
         <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:6px;padding:6px 10px;margin-top:6px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
-          <span style="font-weight:700;font-size:9pt;color:#2e7d32;text-transform:uppercase;letter-spacing:0.5px;">PESO NETO:</span>
-          <span style="font-size:18pt;font-weight:900;color:#1a1a1a;letter-spacing:-0.5px;">${tiquete.pesoNeto !== null ? tiquete.pesoNeto.toLocaleString('es-CO') : '---'} kg</span>
+          <span style="font-weight:700;font-size:11pt;color:#2e7d32;text-transform:uppercase;letter-spacing:0.5px;">PESO NETO:</span>
+          <span style="font-size:20pt;font-weight:900;color:#1a1a1a;letter-spacing:-0.5px;">${tiquete.pesoNeto !== null ? tiquete.pesoNeto.toLocaleString('es-CO') : '---'} kg</span>
         </div>
       </div>
 
       <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoCamion} VEHÍCULO Y CONDUCTOR</div>
-        <div style="font-size:7pt;display:grid;grid-template-columns:auto 1fr;gap:2px 8px;">
-          <span style="color:#666;">Placa:</span><span style="font-weight:700;font-size:9pt;text-transform:uppercase;">${tiquete.placa}</span>
-          <span style="color:#666;">Tipo:</span><span style="font-weight:600;">TRACTOCAMIÓN</span>
+        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:10pt;margin-bottom:4px;">${iconoCamion} VEHÍCULO Y CONDUCTOR</div>
+        <div style="font-size:9pt;display:grid;grid-template-columns:auto 1fr;gap:2px 8px;">
+          <span style="color:#666;">Placa:</span><span style="font-weight:700;font-size:11pt;text-transform:uppercase;">${tiquete.placa}</span>
+          <span style="color:#666;">Tipo:</span><span style="font-weight:600;text-transform:uppercase;">${tiquete.vehiculoTipo}</span>
           <span style="color:#666;">Conductor:</span><span style="font-weight:600;text-transform:uppercase;">${tiquete.conductorNombre}</span>
           <span style="color:#666;">Cédula:</span><span>${tiquete.conductorCedula}</span>
-          <span style="color:#666;">Transportador:</span><span>TRANSPORTADOR</span>
         </div>
       </div>
     </div>
@@ -165,8 +171,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     <!-- FILA 2: PRODUCTO + OTROS DATOS -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;flex:2;min-height:0;">
       <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoPlanta} INFORMACIÓN DEL PRODUCTO</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;font-size:7pt;">
+        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:10pt;margin-bottom:4px;">${iconoPlanta} INFORMACIÓN DEL PRODUCTO</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;font-size:9pt;">
           <div><span style="color:#666;">Proveedor: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.proveedorNombre}</span></div>
           <div><span style="color:#666;">Origen: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.origenNombre || '---'}</span></div>
           <div><span style="color:#666;">Producto: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.productoNombre}</span></div>
@@ -176,34 +182,34 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       </div>
 
       <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:8pt;margin-bottom:4px;">${iconoDoc} OTROS DATOS</div>
-        <div style="font-size:7pt;">
+        <div style="display:flex;align-items:center;gap:4px;font-weight:700;color:#2e7d32;font-size:10pt;margin-bottom:4px;">${iconoDoc} OTROS DATOS</div>
+        <div style="font-size:9pt;">
           <div><span style="color:#666;">Precintos: </span><span style="font-weight:600;text-transform:uppercase;">${tiquete.precintos || '---'}</span></div>
           <div style="color:#666;margin-top:3px;">Observaciones:</div>
-          <div style="border:1px solid #ddd;border-radius:4px;flex-grow:1;padding:2px 4px;margin-top:2px;font-size:6.5pt;text-transform:uppercase;min-height:28px;">${tiquete.observaciones || ''}</div>
+          <div style="border:1px solid #ddd;border-radius:4px;flex-grow:1;padding:2px 4px;margin-top:2px;font-size:8.5pt;text-transform:uppercase;min-height:28px;">${tiquete.observaciones || ''}</div>
         </div>
       </div>
     </div>
 
     <!-- FILA 3: FIRMAS + QR -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;flex:1.2;min-height:0;">
-      <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
-        <div style="font-weight:700;text-align:center;margin-bottom:auto;">OPERADOR BÁSCULA</div>
-        <div>Nombre: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
-        <div style="margin-top:8px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
+      <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:9pt;">
+        <div style="font-weight:700;text-align:center;">OPERADOR BÁSCULA</div>
+        <div style="margin-top:auto;">Nombre: <span style="display:inline-block;width:75%;border-bottom:1px solid #333;">&nbsp;</span></div>
+        <div style="margin-top:20px;">Firma: <span style="display:inline-block;width:75%;border-bottom:1px solid #333;">&nbsp;</span></div>
       </div>
 
-      <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:7pt;">
-        <div style="font-weight:700;text-align:center;margin-bottom:auto;">RESPONSABLE RECEPCIÓN</div>
-        <div>Nombre: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
-        <div style="margin-top:8px;">Firma: <span style="display:inline-block;width:80%;border-bottom:1px solid #333;">&nbsp;</span></div>
+      <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;font-size:9pt;">
+        <div style="font-weight:700;text-align:center;">RESPONSABLE RECEPCIÓN</div>
+        <div style="margin-top:auto;">Nombre: <span style="display:inline-block;width:75%;border-bottom:1px solid #333;">&nbsp;</span></div>
+        <div style="margin-top:20px;">Firma: <span style="display:inline-block;width:75%;border-bottom:1px solid #333;">&nbsp;</span></div>
       </div>
 
       <div style="border:1px solid #ccc;border-radius:6px;padding:4px 6px;display:flex;flex-direction:column;height:100%;overflow:hidden;justify-content:center;">
         <div style="display:flex;gap:6px;align-items:center;">
-          <img src="${tiquete.qrUrl}" style="width:55px;height:55px;flex-shrink:0;" />
-          <div style="font-size:5.5pt;color:#444;line-height:1.2;">
-            <div style="font-weight:700;font-size:6pt;">Gracias por su confianza</div>
+          <img src="${tiquete.qrUrl}" style="width:65px;height:65px;flex-shrink:0;" />
+          <div style="font-size:7.5pt;color:#444;line-height:1.2;">
+            <div style="font-weight:700;font-size:8pt;">Gracias por su confianza</div>
             <div style="font-style:italic;">Contribuimos al desarrollo del campo y la agroindustria sostenible.</div>
             <div style="margin-top:2px;">Conserve este tiquete para cualquier reclamación.</div>
           </div>
@@ -212,7 +218,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     </div>
 
     <!-- PIE -->
-    <div style="background:#2e7d32;color:white;text-align:center;font-size:7pt;font-weight:700;padding:6px;width:100%;border-radius:4px;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box;">
+    <div style="background:#2e7d32;color:white;text-align:center;font-size:9pt;font-weight:700;padding:6px;width:100%;border-radius:4px;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box;">
       Este tiquete no tiene validez sin sello y firma.
     </div>
 

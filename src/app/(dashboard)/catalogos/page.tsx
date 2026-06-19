@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Truck, Users, MapPin, Building2, Box, ArrowRightLeft, Target } from "lucide-react";
+import { Truck, Users, MapPin, Building2, Box, ArrowRightLeft, Target, Sliders } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { GenericCatalogTab } from "@/components/catalogos/GenericCatalogTab";
 import { VehiculosTab } from "@/components/catalogos/VehiculosTab";
@@ -63,6 +63,7 @@ export default function CatalogosPage() {
           {activeTab === "origenes" && <GenericCatalogTab type="origenes" title="Orígenes" />}
           {activeTab === "destinos" && <GenericCatalogTab type="destinos" title="Destinos" />}
           {activeTab === "productos" && <GenericCatalogTab type="productos" title="Productos" />}
+          {activeTab === "tipos_vehiculo" && <GenericCatalogTab type="tipos_vehiculo" title="Tipos de Vehículo" />}
           
           {activeTab === "usuarios" && <UsuariosTab />}
         </div>

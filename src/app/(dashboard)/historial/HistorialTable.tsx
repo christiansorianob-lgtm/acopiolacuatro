@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, ExternalLink, Scale, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { registrarSalidaTiquete } from "@/app/actions/tiquetes";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { LectorBascula } from "@/components/ui/LectorBascula";
 
 interface HistorialTableProps {
   initialData: any[]; // Usaremos any por simplicidad con Prisma types aquí
@@ -13,13 +14,37 @@ interface HistorialTableProps {
 
 export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterEstado, setFilterEstado] = useState("TODOS");
+  const [filterEstado, setFilterEstado] = useState(searchParams.get("estado") || "TODOS");
+
+  const paramEstado = searchParams.get("estado");
+  const paramSalida = searchParams.get("salida");
+  
+  useEffect(() => {
+    if (paramEstado) {
+      setFilterEstado(paramEstado);
+    }
+  }, [paramEstado]);
 
   // Modal State
   const [selectedTiquete, setSelectedTiquete] = useState<any>(null);
   const [pesoSalida, setPesoSalida] = useState<number | "">("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (paramSalida && initialData && !selectedTiquete) {
+      const ticket = initialData.find(t => t.publicToken === paramSalida);
+      if (ticket && ticket.estado === "ABIERTO") {
+        setSelectedTiquete(ticket);
+        setPesoSalida("");
+        // Clean URL after opening (optional but cleaner)
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("salida");
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, [paramSalida, initialData]);
 
   // Filtrado local
   const filteredData = initialData.filter(t => {
@@ -48,7 +73,7 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
       alert(`¡Salida registrada exitosamente! Peso Neto: ${res.data?.pesoNeto} Kg`);
       setSelectedTiquete(null);
       // Auto-open print window
-      window.open(`/imprimir/${res.data.id}`, '_blank');
+      window.open(`/imprimir/${res.data.publicToken}`, '_blank');
       router.refresh();
     } else {
       alert(res.error);
@@ -103,8 +128,9 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
             <tr className="border-b border-slate-800 bg-slate-900/80 text-xs uppercase tracking-wider text-slate-400">
               <th className="p-4 font-semibold whitespace-nowrap">N°</th>
               <th className="p-4 font-semibold whitespace-nowrap">Vehículo</th>
+              <th className="p-4 font-semibold whitespace-nowrap">Movimiento</th>
               <th className="p-4 font-semibold whitespace-nowrap">Conductor</th>
-              <th className="p-4 font-semibold whitespace-nowrap">Ingreso</th>
+              <th className="p-4 font-semibold whitespace-nowrap">Fecha Entrada</th>
               <th className="p-4 font-semibold whitespace-nowrap text-right">Peso Entrada</th>
               <th className="p-4 font-semibold whitespace-nowrap text-right">Peso Neto</th>
               <th className="p-4 font-semibold whitespace-nowrap text-center">Estado</th>
@@ -114,7 +140,7 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
           <tbody className="text-sm divide-y divide-slate-800/50">
             {filteredData.length === 0 ? (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-slate-500">
+                <td colSpan={9} className="p-8 text-center text-slate-500">
                   No se encontraron tiquetes que coincidan con la búsqueda.
                 </td>
               </tr>
@@ -124,6 +150,19 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
                   <td className="p-4 font-mono text-cyan-400 font-medium">#{t.numero.toString().padStart(4, '0')}</td>
                   <td className="p-4">
                     <span className="font-bold text-white bg-slate-800 px-2 py-1 rounded-md tracking-widest">{t.placa}</span>
+                  </td>
+                  <td className="p-4">
+                    {t.estado === "ABIERTO" ? (
+                      <span className="text-slate-500 text-xs font-medium italic">Pendiente</span>
+                    ) : t.tipo === "INGRESO" ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Entrada
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        Salida
+                      </span>
+                    )}
                   </td>
                   <td className="p-4">
                     <span className="block text-slate-200">{t.conductorNombre}</span>
@@ -158,7 +197,7 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
                       </button>
                     ) : (
                       <button 
-                        onClick={() => window.open(`/imprimir/${t.id}`, '_blank')}
+                        onClick={() => window.open(`/imprimir/${t.publicToken}`, '_blank')}
                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition-colors"
                       >
                         Ver Tiquete
@@ -203,25 +242,9 @@ export function HistorialTable({ initialData, usuarioId }: HistorialTableProps) 
               </div>
             </div>
 
-            {/* Input Manual Peso Salida */}
-            <div className="bg-black rounded-xl p-6 border-2 transition-colors duration-300 shadow-inner border-slate-800 focus-within:border-cyan-500/50 focus-within:shadow-cyan-500/20">
-              <div className="flex items-baseline justify-center gap-2">
-                <input
-                  type="number"
-                  min="1"
-                  required
-                  value={pesoSalida}
-                  onChange={(e) => setPesoSalida(Number(e.target.value) || "")}
-                  disabled={saving}
-                  placeholder="00000"
-                  className="w-[200px] bg-transparent text-right text-5xl font-bold font-mono tracking-tighter text-emerald-500 placeholder-slate-800 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  autoFocus
-                />
-                <span className="text-xl font-bold text-slate-600 font-mono">KG</span>
-              </div>
-              <p className="text-xs mt-4 font-medium text-slate-500 uppercase text-center">
-                Peso Manual de Salida
-              </p>
+            {/* Input Manual / Automático Peso Salida */}
+            <div className="flex justify-center">
+              <LectorBascula onPesoChange={(peso) => setPesoSalida(peso)} />
             </div>
 
             {/* Cálculo en vivo Peso Neto */}

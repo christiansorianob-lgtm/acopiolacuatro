@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
-import { Scale, Save, Loader2, RefreshCw } from "lucide-react";
-import { crearTiqueteIngreso } from "@/app/actions/tiquetes";
+import { Scale, Save, Loader2, RefreshCw, Printer, ArrowRight, ChevronLeft, CheckCircle2, Plus } from "lucide-react";
+import { crearTiqueteIngreso, registrarSalidaTiquete } from "@/app/actions/tiquetes";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { createVehiculo } from "@/app/actions/vehiculos";
 import { createConductor } from "@/app/actions/conductores";
 import { createGenericItem, GenericCatalogType } from "@/app/actions/generic-catalog";
+import { LectorBascula } from "@/components/ui/LectorBascula";
 
 interface RecepcionFormProps {
   data: {
@@ -19,6 +20,7 @@ interface RecepcionFormProps {
     origenes: { id: number; label: string }[];
     destinos: { id: number; label: string }[];
     productos: { id: number; label: string }[];
+    tiposVehiculo: string[];
   };
   usuarioId: number;
 }
@@ -45,6 +47,35 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
   const [productoId, setProductoId] = useState<number | null>(null);
   const [remision, setRemision] = useState("");
   const [observaciones, setObservaciones] = useState("");
+  
+  // Flujo de Éxito / Salida Directa
+  const [createdTicket, setCreatedTicket] = useState<any>(null);
+  const [showSalidaForm, setShowSalidaForm] = useState(false);
+  const [pesoSalida, setPesoSalida] = useState<number | "">("");
+  const [savingSalida, setSavingSalida] = useState(false);
+
+  // Inline quick create types for quick create vehicle
+  const [showQcNewTipoInput, setShowQcNewTipoInput] = useState(false);
+  const [qcNewTipoName, setQcNewTipoName] = useState("");
+
+  const handleQcQuickCreateTipo = async () => {
+    if (!qcNewTipoName.trim()) return;
+    setQuickCreateSaving(true);
+    const res = await createGenericItem("tipos_vehiculo", qcNewTipoName.trim());
+    if (res.success && res.data) {
+      const nuevoNombre = res.data.nombre;
+      setData(prev => ({
+        ...prev,
+        tiposVehiculo: [...prev.tiposVehiculo.filter(t => t !== nuevoNombre), nuevoNombre]
+      }));
+      setQcTipoVehiculo(nuevoNombre);
+      setShowQcNewTipoInput(false);
+      setQcNewTipoName("");
+    } else {
+      alert(res.error || "Error al crear el tipo");
+    }
+    setQuickCreateSaving(false);
+  };
 
 
 
@@ -59,6 +90,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
   
   const [qcCedula, setQcCedula] = useState("");
   const [qcNombre, setQcNombre] = useState("");
+  const [qcTelefono, setQcTelefono] = useState("");
 
   const handleSaveTiquete = async () => {
     if (!vehiculoId || !conductorId) {
@@ -87,7 +119,12 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
     });
 
     if (res.success && res.data) {
-      alert(`¡Éxito! Tiquete de Ingreso #${res.data.numero} creado correctamente.`);
+      // Guardar el tiquete creado y abrir modal de éxito
+      setCreatedTicket(res.data);
+      setShowSalidaForm(false);
+      setPesoSalida("");
+
+      // Limpiar el formulario
       setVehiculoId(null);
       setConductorId(null);
       setProveedorId(null);
@@ -97,8 +134,8 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
       setProductoId(null);
       setRemision("");
       setObservaciones("");
-
       setPesoCapturado(0);
+
       router.refresh();
     } else {
       alert(res.error);
@@ -106,11 +143,34 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
     setSaving(false);
   };
 
+  const handleSaveSalidaTiquete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createdTicket || pesoSalida === "" || Number(pesoSalida) <= 0) return;
+
+    setSavingSalida(true);
+    const res = await registrarSalidaTiquete(createdTicket.id, Number(pesoSalida), usuarioId);
+    if (res.success && res.data) {
+      alert(`¡Salida registrada exitosamente! Peso Neto: ${res.data?.pesoNeto} Kg`);
+      const tId = createdTicket.id;
+      setCreatedTicket(null);
+      setShowSalidaForm(false);
+      setPesoSalida("");
+      // Auto-open print window
+      window.open(`/imprimir/${createdTicket.publicToken}`, '_blank');
+      router.refresh();
+    } else {
+      alert(res.error);
+    }
+    setSavingSalida(false);
+  };
+
   const openQuickCreate = (type: EntityType, searchValue: string) => {
     setQuickCreateType(type);
+    setShowQcNewTipoInput(false);
+    setQcNewTipoName("");
     if (type === 'vehiculo') {
       setQcPlaca(searchValue.toUpperCase());
-      setQcTipoVehiculo("Sencillo");
+      setQcTipoVehiculo(data.tiposVehiculo?.[0] || "Sencillo");
       setQcTara("");
     } else if (type === 'conductor') {
       // If it looks like a number, put in cedula, else nombre
@@ -121,6 +181,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
         setQcCedula("");
         setQcNombre(searchValue);
       }
+      setQcTelefono("");
     } else {
       setQcNombre(searchValue);
     }
@@ -147,7 +208,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
         } else alert(res.error);
       } 
       else if (quickCreateType === 'conductor') {
-        const res = await createConductor({ cedula: qcCedula, nombre: qcNombre });
+        const res = await createConductor({ cedula: qcCedula, nombre: qcNombre, telefono: qcTelefono.trim() || null });
         if (res.success && res.data) {
           success = true;
           newId = res.data.id;
@@ -300,32 +361,7 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
 
       {/* Columna Derecha: Pantalla de Báscula */}
       <div className="space-y-6">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-800/20 to-transparent pointer-events-none" />
-          
-          <div className="p-6 text-center">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Indicador de Peso</h2>            {/* Display Digital / Input Manual */}
-            <div className={`bg-black rounded-xl p-6 mb-6 border-2 transition-colors duration-300 shadow-inner ${pesoCapturado > 0 ? 'border-emerald-500/50 shadow-emerald-500/20' : 'border-slate-800 focus-within:border-cyan-500/50 focus-within:shadow-cyan-500/20'}`}>
-              <div className="flex items-baseline justify-center gap-2">
-                <input
-                  type="number"
-                  min="0"
-                  value={pesoCapturado || ""}
-                  onChange={(e) => setPesoCapturado(parseInt(e.target.value) || 0)}
-                  disabled={saving}
-                  placeholder="00000"
-                  className="w-[200px] bg-transparent text-right text-5xl md:text-6xl font-bold font-mono tracking-tighter text-emerald-500 placeholder-slate-800 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
-                <span className="text-xl font-bold text-slate-600 font-mono">
-                  KG
-                </span>
-              </div>
-              <p className="text-xs mt-4 font-medium text-slate-500 uppercase">
-                Ingreso Manual de Peso
-              </p>
-            </div>
-          </div>
-        </div>
+        <LectorBascula onPesoChange={(peso) => setPesoCapturado(peso)} />
 
         <button
           onClick={handleSaveTiquete}
@@ -356,13 +392,63 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Tipo de Vehículo</label>
-                <select required value={qcTipoVehiculo} onChange={e => setQcTipoVehiculo(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500" disabled={quickCreateSaving}>
-                  <option value="Sencillo">Sencillo</option>
-                  <option value="Doble Troque">Doble Troque</option>
-                  <option value="Tractomula">Tractomula</option>
-                  <option value="Furgón">Furgón</option>
-                  <option value="Otro">Otro</option>
-                </select>
+                {!showQcNewTipoInput ? (
+                  <div className="flex gap-2">
+                    <select required value={qcTipoVehiculo} onChange={e => setQcTipoVehiculo(e.target.value)} className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500" disabled={quickCreateSaving}>
+                      {data.tiposVehiculo?.map((tipo) => (
+                        <option key={tipo} value={tipo}>{tipo}</option>
+                      ))}
+                      {(!data.tiposVehiculo || data.tiposVehiculo.length === 0) && (
+                        <>
+                          <option value="Sencillo">Sencillo</option>
+                          <option value="Doble Troque">Doble Troque</option>
+                          <option value="Tractomula">Tractomula</option>
+                          <option value="Furgón">Furgón</option>
+                        </>
+                      )}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowQcNewTipoInput(true);
+                        setQcNewTipoName("");
+                      }}
+                      title="Crear nuevo tipo"
+                      className="px-3 bg-slate-900 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 rounded-lg border border-slate-800 transition-colors flex items-center justify-center font-bold text-lg"
+                      disabled={quickCreateSaving}
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={qcNewTipoName}
+                      onChange={(e) => setQcNewTipoName(e.target.value)}
+                      className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                      placeholder="Nuevo Tipo (ej. Volqueta)"
+                      autoFocus
+                      disabled={quickCreateSaving}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleQcQuickCreateTipo}
+                      disabled={quickCreateSaving || !qcNewTipoName.trim()}
+                      className="px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowQcNewTipoInput(false)}
+                      disabled={quickCreateSaving}
+                      className="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Peso Tara Predeterminado (Kg) - Opcional</label>
@@ -380,6 +466,10 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Nombre Completo</label>
                 <input required value={qcNombre} onChange={e => setQcNombre(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500" disabled={quickCreateSaving}/>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Teléfono (WhatsApp)</label>
+                <input value={qcTelefono} onChange={e => setQcTelefono(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500" placeholder="Ej. 3153930918 (opcional)" disabled={quickCreateSaving}/>
               </div>
             </>
           )}
@@ -399,6 +489,155 @@ export function RecepcionForm({ data: initialData, usuarioId }: RecepcionFormPro
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* MODAL DE ÉXITO Y TRÁMITE DE SALIDA DIRECTA */}
+      <Modal
+        isOpen={!!createdTicket}
+        onClose={() => {
+          if (!savingSalida) {
+            setCreatedTicket(null);
+            setShowSalidaForm(false);
+          }
+        }}
+        title={showSalidaForm ? "Registrar Salida de Planta" : "¡Tiquete de Ingreso Registrado!"}
+      >
+        {createdTicket && (
+          <div className="space-y-6">
+            {!showSalidaForm ? (
+              // Vista 1: Éxito y Opciones
+              <div className="space-y-6 text-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center border border-emerald-500/20">
+                    <CheckCircle2 className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mt-2">
+                    Tiquete N° #{String(createdTicket.numero).padStart(6, '0')}
+                  </h3>
+                  <p className="text-slate-400 text-sm">
+                    El pesaje inicial se ha guardado correctamente.
+                  </p>
+                </div>
+
+                <div className="bg-slate-950 rounded-xl p-5 border border-slate-800 grid grid-cols-2 gap-4 text-left text-sm max-w-md mx-auto">
+                  <div>
+                    <p className="text-slate-500 mb-0.5">Vehículo (Placa)</p>
+                    <p className="font-bold tracking-widest text-white">{createdTicket.placa}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 mb-0.5">Peso Entrada</p>
+                    <p className="font-mono text-slate-300 font-bold">{createdTicket.pesoEntrada.toLocaleString('es-CO')} Kg</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-slate-500 mb-0.5">Conductor</p>
+                    <p className="font-semibold text-slate-200 text-ellipsis overflow-hidden whitespace-nowrap">{createdTicket.conductorNombre}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-center pt-2">
+                  <button
+                    onClick={() => setShowSalidaForm(true)}
+                    className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-5 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-cyan-500/20"
+                  >
+                    <Scale className="w-5 h-5" />
+                    Registrar Salida
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setCreatedTicket(null);
+                    setShowSalidaForm(false);
+                  }}
+                  className="text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors"
+                >
+                  Nuevo Tiquete de Entrada
+                </button>
+              </div>
+            ) : (
+              // Vista 2: Registrar Salida (Pesaje Final)
+              <form onSubmit={handleSaveSalidaTiquete} className="space-y-6">
+                <div className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer" onClick={() => setShowSalidaForm(false)}>
+                  <ChevronLeft className="w-5 h-5" />
+                  <span className="text-sm font-medium">Volver a opciones</span>
+                </div>
+
+                <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500 mb-0.5">Tiquete N°</p>
+                    <p className="font-mono text-cyan-400 font-bold">#{String(createdTicket.numero).padStart(6, '0')}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 mb-0.5">Vehículo</p>
+                    <p className="font-bold tracking-widest text-white">{createdTicket.placa}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 mb-0.5">Peso Entrada</p>
+                    <p className="font-mono text-slate-300 font-bold">{createdTicket.pesoEntrada.toLocaleString('es-CO')} Kg</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 mb-0.5">Conductor</p>
+                    <p className="font-semibold text-slate-200 text-ellipsis overflow-hidden whitespace-nowrap">{createdTicket.conductorNombre}</p>
+                  </div>
+                </div>
+
+                {/* Input Manual Peso Salida */}
+                <div className="bg-black rounded-xl p-6 border-2 transition-colors duration-300 shadow-inner border-slate-800 focus-within:border-cyan-500/50 focus-within:shadow-cyan-500/20">
+                  <div className="flex items-baseline justify-center gap-2">
+                    <input
+                      type="number"
+                      min="1"
+                      required
+                      value={pesoSalida}
+                      onChange={(e) => setPesoSalida(Number(e.target.value) || "")}
+                      disabled={savingSalida}
+                      placeholder="00000"
+                      className="w-[200px] bg-transparent text-right text-5xl font-bold font-mono tracking-tighter text-emerald-500 placeholder-slate-800 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      autoFocus
+                    />
+                    <span className="text-xl font-bold text-slate-600 font-mono">KG</span>
+                  </div>
+                  <p className="text-xs mt-4 font-medium text-slate-500 uppercase text-center">
+                    Peso Manual de Salida
+                  </p>
+                </div>
+
+                {/* Peso Neto en vivo */}
+                <div className="flex items-center justify-between p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <Scale className="w-6 h-6 text-emerald-500" />
+                    <span className="font-semibold text-emerald-500">Peso Neto Calculado:</span>
+                  </div>
+                  <span className="text-2xl font-mono font-bold text-white">
+                    {pesoSalida ? Math.abs(createdTicket.pesoEntrada - Number(pesoSalida)).toLocaleString('es-CO') : 0} Kg
+                  </span>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSalidaForm(false)}
+                    disabled={savingSalida}
+                    className="px-4 py-3 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={savingSalida || !pesoSalida}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {savingSalida ? (
+                      <><Loader2 className="w-5 h-5 animate-spin" /> Procesando...</>
+                    ) : (
+                      <>Finalizar Viaje <ArrowRight className="w-5 h-5" /></>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
       </Modal>
 
     </div>

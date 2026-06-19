@@ -52,6 +52,7 @@ export async function crearTiqueteIngreso(data: {
           
           conductorId: data.conductorId,
           conductorNombre: conductor.nombre,
+          conductorTelefono: conductor.telefono,
           
           proveedorId: data.proveedorId,
           proveedorNombre: proveedor?.nombre,
@@ -97,10 +98,12 @@ export async function registrarSalidaTiquete(id: number, pesoSalida: number, usu
     if (tiquete.estado !== "ABIERTO") throw new Error("El tiquete ya está cerrado o anulado");
 
     const pesoNeto = Math.abs(tiquete.pesoEntrada - pesoSalida);
+    const tipo = tiquete.pesoEntrada > pesoSalida ? "INGRESO" : "DESPACHO";
 
     const updated = await prisma.tiquetes.update({
       where: { id },
       data: {
+        tipo,
         pesoSalida,
         pesoNeto,
         fechaSalida: new Date(),

@@ -50,6 +50,7 @@ model conductores {
   id        Int      @id @default(autoincrement())
   cedula    String   @unique
   nombre    String
+  telefono  String?
   activo    Boolean  @default(true)
   createdAt DateTime @default(now())
 
@@ -103,6 +104,7 @@ model productos {
 
 model tiquetes {
   id               Int      @id @default(autoincrement())
+  publicToken      String   @unique @default(dbgenerated("gen_random_uuid()"))
   numero           Int      @unique
   tipo             String   // INGRESO / DESPACHO
   estado           String   // ABIERTO / CERRADO / ANULADO
@@ -112,6 +114,7 @@ model tiquetes {
   vehiculo         vehiculos @relation(fields: [vehiculoId], references: [id])
 
   conductorNombre  String
+  conductorTelefono String?
   conductorId      Int
   conductor        conductores @relation(fields: [conductorId], references: [id])
 
@@ -182,5 +185,12 @@ model backups {
   registros Int
   tamano    Int?     // bytes
   url       String?
+  createdAt DateTime @default(now())
+}
+
+model tipos_vehiculo {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @unique
+  activo    Boolean  @default(true)
   createdAt DateTime @default(now())
 }

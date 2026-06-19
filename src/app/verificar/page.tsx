@@ -4,27 +4,20 @@ import { ShieldCheck, ShieldAlert } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-export default async function VerificarPage({ searchParams }: { searchParams: Promise<{ t: string; firma: string }> }) {
+export default async function VerificarPage({ searchParams }: { searchParams: Promise<{ token: string }> }) {
   try {
-    const { t, firma } = await searchParams;
-    const tiqueteId = parseInt(t);
+    const { token } = await searchParams;
     
-    if (isNaN(tiqueteId) || !firma) {
+    if (!token || token.length < 10) {
       return <InvalidState message="Enlace de verificacion invalido o incompleto." />;
     }
 
     const tiquete = await prisma.tiquetes.findUnique({
-      where: { numero: tiqueteId }
+      where: { publicToken: token }
     });
 
     if (!tiquete) {
       return <InvalidState message="Tiquete no encontrado en la base de datos." />;
-    }
-
-    const firmaCalculada = generarFirmaTiquete(tiquete);
-    
-    if (firmaCalculada !== firma) {
-      return <InvalidState message="Tiquete alterado o firma no coincide con los datos del sistema." />;
     }
 
     // Valid

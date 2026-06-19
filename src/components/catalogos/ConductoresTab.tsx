@@ -9,6 +9,7 @@ interface Conductor {
   id: number;
   cedula: string;
   nombre: string;
+  telefono?: string | null;
   activo: boolean;
 }
 
@@ -22,6 +23,7 @@ export function ConductoresTab() {
   // Form state
   const [cedula, setCedula] = useState("");
   const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
 
   useEffect(() => {
     loadItems();
@@ -41,10 +43,12 @@ export function ConductoresTab() {
       setEditingItem(item);
       setCedula(item.cedula);
       setNombre(item.nombre);
+      setTelefono(item.telefono || "");
     } else {
       setEditingItem(null);
       setCedula("");
       setNombre("");
+      setTelefono("");
     }
     setIsModalOpen(true);
   };
@@ -57,9 +61,17 @@ export function ConductoresTab() {
     let res;
     
     if (editingItem) {
-      res = await updateConductor(editingItem.id, { cedula: cedula.trim(), nombre: nombre.trim() });
+      res = await updateConductor(editingItem.id, { 
+        cedula: cedula.trim(), 
+        nombre: nombre.trim(),
+        telefono: telefono.trim() || null
+      });
     } else {
-      res = await createConductor({ cedula: cedula.trim(), nombre: nombre.trim() });
+      res = await createConductor({ 
+        cedula: cedula.trim(), 
+        nombre: nombre.trim(),
+        telefono: telefono.trim() || null
+      });
     }
 
     if (res?.success) {
@@ -106,6 +118,7 @@ export function ConductoresTab() {
                 <tr>
                   <th className="px-6 py-4 font-medium">Cédula</th>
                   <th className="px-6 py-4 font-medium">Nombre</th>
+                  <th className="px-6 py-4 font-medium">Teléfono</th>
                   <th className="px-6 py-4 font-medium">Estado</th>
                   <th className="px-6 py-4 font-medium text-right">Acciones</th>
                 </tr>
@@ -113,7 +126,7 @@ export function ConductoresTab() {
               <tbody className="divide-y divide-slate-800">
                 {items.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                    <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
                       No hay conductores registrados.
                     </td>
                   </tr>
@@ -122,6 +135,7 @@ export function ConductoresTab() {
                     <tr key={item.id} className="hover:bg-slate-800/20 transition-colors">
                       <td className="px-6 py-4 font-medium text-slate-200">{item.cedula}</td>
                       <td className="px-6 py-4 text-slate-300">{item.nombre}</td>
+                      <td className="px-6 py-4 text-slate-300">{item.telefono || <span className="text-slate-600">—</span>}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                           item.activo ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
@@ -184,6 +198,17 @@ export function ConductoresTab() {
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
               placeholder="Ej. Juan Pérez"
               required
+              disabled={saving}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Teléfono (WhatsApp)</label>
+            <input
+              type="text"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+              placeholder="Ej. 3153930918 (opcional)"
               disabled={saving}
             />
           </div>

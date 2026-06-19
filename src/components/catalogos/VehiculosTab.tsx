@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Edit2, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Plus, Edit2, CheckCircle, XCircle, Loader2, Sliders } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { getVehiculos, createVehiculo, updateVehiculo } from "@/app/actions/vehiculos";
+import { getGenericItems, createGenericItem } from "@/app/actions/generic-catalog";
+import { GenericCatalogTab } from "./GenericCatalogTab";
 
 interface Vehiculo {
   id: number;
@@ -24,10 +26,43 @@ export function VehiculosTab() {
   const [placa, setPlaca] = useState("");
   const [tipo, setTipo] = useState("Sencillo");
   const [tara, setTara] = useState("");
+  const [tiposList, setTiposList] = useState<string[]>([]);
+  const [isTiposModalOpen, setIsTiposModalOpen] = useState(false);
+
+  // Inline quick create types
+  const [showNewTipoInput, setShowNewTipoInput] = useState(false);
+  const [newTipoName, setNewTipoName] = useState("");
 
   useEffect(() => {
     loadItems();
+    loadTipos();
   }, []);
+
+  const loadTipos = async () => {
+    const res = await getGenericItems("tipos_vehiculo");
+    if (res.success && res.data) {
+      const activeTypes = res.data.filter((t: any) => t.activo).map((t: any) => t.nombre);
+      setTiposList(activeTypes);
+      if (activeTypes.length > 0) {
+        setTipo(activeTypes[0]);
+      }
+    }
+  };
+
+  const handleQuickCreateTipo = async () => {
+    if (!newTipoName.trim()) return;
+    setSaving(true);
+    const res = await createGenericItem("tipos_vehiculo", newTipoName.trim());
+    if (res.success && res.data) {
+      await loadTipos();
+      setTipo(res.data.nombre);
+      setShowNewTipoInput(false);
+      setNewTipoName("");
+    } else {
+      alert(res.error || "Error al crear el tipo");
+    }
+    setSaving(false);
+  };
 
   const loadItems = async () => {
     setLoading(true);
@@ -39,6 +74,8 @@ export function VehiculosTab() {
   };
 
   const handleOpenModal = (item?: Vehiculo) => {
+    setShowNewTipoInput(false);
+    setNewTipoName("");
     if (item) {
       setEditingItem(item);
       setPlaca(item.placa);
@@ -47,7 +84,7 @@ export function VehiculosTab() {
     } else {
       setEditingItem(null);
       setPlaca("");
-      setTipo("Sencillo");
+      setTipo(tiposList[0] || "Sencillo");
       setTara("");
     }
     setIsModalOpen(true);
@@ -90,13 +127,22 @@ export function VehiculosTab() {
           <h2 className="text-xl font-semibold text-white">Catálogo de Vehículos</h2>
           <p className="text-slate-400 text-sm">Gestiona los camiones y volquetas.</p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Nuevo Vehículo
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setIsTiposModalOpen(true)}
+            className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 border border-slate-800"
+          >
+            <Sliders className="w-4 h-4" />
+            Administrar Tipos
+          </button>
+          <button
+            onClick={() => handleOpenModal()}
+            className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Nuevo Vehículo
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -185,19 +231,68 @@ export function VehiculosTab() {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Tipo de Vehículo</label>
-            <select
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
-              required
-              disabled={saving}
-            >
-              <option value="Sencillo">Sencillo</option>
-              <option value="Doble Troque">Doble Troque</option>
-              <option value="Tractomula">Tractomula</option>
-              <option value="Furgón">Furgón</option>
-              <option value="Otro">Otro</option>
-            </select>
+            {!showNewTipoInput ? (
+              <div className="flex gap-2">
+                <select
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value)}
+                  className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  required
+                  disabled={saving}
+                >
+                  {tiposList.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                  {tiposList.length === 0 && (
+                    <>
+                      <option value="Sencillo">Sencillo</option>
+                      <option value="Doble Troque">Doble Troque</option>
+                      <option value="Tractomula">Tractomula</option>
+                      <option value="Furgón">Furgón</option>
+                    </>
+                  )}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNewTipoInput(true);
+                    setNewTipoName("");
+                  }}
+                  title="Crear nuevo tipo"
+                  className="px-3 bg-slate-900 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 rounded-lg border border-slate-800 transition-colors flex items-center justify-center font-bold text-lg"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newTipoName}
+                  onChange={(e) => setNewTipoName(e.target.value)}
+                  className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  placeholder="Nuevo Tipo (ej. Volqueta)"
+                  autoFocus
+                  disabled={saving}
+                />
+                <button
+                  type="button"
+                  onClick={handleQuickCreateTipo}
+                  disabled={saving || !newTipoName.trim()}
+                  className="px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  Guardar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowNewTipoInput(false)}
+                  disabled={saving}
+                  className="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors"
+                >
+                  X
+                </button>
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Peso Tara Predeterminado (Kg) - Opcional</label>
@@ -230,6 +325,20 @@ export function VehiculosTab() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* MODAL PARA ADMINISTRAR TIPOS DE VEHÍCULO */}
+      <Modal
+        isOpen={isTiposModalOpen}
+        onClose={() => {
+          setIsTiposModalOpen(false);
+          loadTipos();
+        }}
+        title="Administrar Tipos de Vehículo"
+      >
+        <div className="max-h-[60vh] overflow-y-auto pr-1">
+          <GenericCatalogTab type="tipos_vehiculo" title="Tipos de Vehículo" />
+        </div>
       </Modal>
     </div>
   );

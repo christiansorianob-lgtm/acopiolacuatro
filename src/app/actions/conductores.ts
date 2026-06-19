@@ -15,7 +15,7 @@ export async function getConductores() {
   }
 }
 
-export async function createConductor(data: { cedula: string; nombre: string }) {
+export async function createConductor(data: { cedula: string; nombre: string; telefono?: string | null }) {
   try {
     const item = await prisma.conductores.create({
       data: { ...data, activo: true }
@@ -29,7 +29,7 @@ export async function createConductor(data: { cedula: string; nombre: string }) 
   }
 }
 
-export async function updateConductor(id: number, data: { cedula?: string; nombre?: string; activo?: boolean }) {
+export async function updateConductor(id: number, data: { cedula?: string; nombre?: string; telefono?: string | null; activo?: boolean }) {
   try {
     const item = await prisma.conductores.update({
       where: { id },

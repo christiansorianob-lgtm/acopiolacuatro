@@ -14,14 +14,16 @@ export const metadata: Metadata = {
 export default async function ImprimirTiquetePage({ params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const tiqueteId = parseInt(id);
-    if (isNaN(tiqueteId)) notFound();
+    // id in the URL is now the publicToken UUID
+    if (!id || id.length < 10) notFound(); // Basic validation to reject old numeric IDs
 
     const tiquete = await prisma.tiquetes.findUnique({
-      where: { id: tiqueteId },
+      where: { publicToken: id },
       include: {
         usuarioEntrada: true,
         usuarioSalida: true,
+        conductor: true,
+        vehiculo: true,
       }
     });
 
@@ -40,11 +42,10 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
       }
     };
 
-    const firma = generarFirmaTiquete(tiquete);
     const headersList = await headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = host.includes('localhost') ? 'http' : 'https';
-    const verificationUrl = `${protocol}://${host}/verificar?t=${tiquete.numero}&firma=${firma}`;
+    const verificationUrl = `${protocol}://${host}/verificar?token=${tiquete.publicToken}`;
     
     // Generate QR Data URL
     const QRCode = require('qrcode');
@@ -54,15 +55,19 @@ export default async function ImprimirTiquetePage({ params }: { params: Promise<
       <TicketRenderer 
         tiquete={{
           id: tiquete.id,
+          publicToken: tiquete.publicToken,
           numero: tiquete.numero,
+          tipo: tiquete.tipo,
           fechaEntrada: formatearFecha(tiquete.fechaEntrada),
           fechaSalida: tiquete.fechaSalida ? formatearFecha(tiquete.fechaSalida) : null,
           pesoEntrada: tiquete.pesoEntrada,
           pesoSalida: tiquete.pesoSalida,
           pesoNeto: tiquete.pesoNeto,
           placa: tiquete.placa,
+          vehiculoTipo: tiquete.vehiculo?.tipo || 'N/A',
           conductorNombre: tiquete.conductorNombre,
-          conductorCedula: tiquete.conductorNombre?.split(' ').slice(-1)[0] || '---',
+          conductorCedula: tiquete.conductor?.cedula || '---',
+          conductorTelefono: tiquete.conductorTelefono || tiquete.conductor?.telefono || null,
           proveedorNombre: tiquete.proveedorNombre || 'TERCERO',
           productoNombre: tiquete.productoNombre || 'PRODUCTO',
           origenNombre: tiquete.origenNombre,
